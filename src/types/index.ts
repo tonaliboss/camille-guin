@@ -35,3 +35,13 @@ export interface UploadProgress {
     status: 'pending' | 'uploading' | 'success' | 'error'
   }
 }
+
+export interface DepotSettings {
+  bannerType: 'image' | 'solid' | 'custom'
+  bannerColor: string
+  bannerImageUrl: string | null
+  themeColor: string
+  titleColor: string
+  buttonTextColor: string
+  guestMessage: string
+}

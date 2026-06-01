@@ -1,6 +1,6 @@
 export const TOKENS = {
-  depot: process.env.DEPOT_TOKEN!,
-  galerie: process.env.GALERIE_TOKEN!,
+  depot: process.env.NEXT_PUBLIC_DEPOT_TOKEN!,
+  galerie: process.env.NEXT_PUBLIC_GALERIE_TOKEN!,
 } as const
 
 export type TokenType = keyof typeof TOKENS
