@@ -1,14 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 import type { DepotSettings } from '@/types'
-
-// Client avec service role pour l'écriture (côté serveur uniquement)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-// Client public pour la lecture
 import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 const SETTINGS_KEY = 'depot_settings'
 

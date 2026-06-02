@@ -35,14 +35,30 @@ export const useFileUpload = (folderName: string) => {
 
       const fileExt = file.name.split('.').pop()?.toLowerCase() || 'unknown'
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const bucketPath = `${folderName}/${fileName}`
 
       updateProgress(file.name, { progress: 50 })
 
-      const { error } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(`${folderName}/${fileName}`, file)
+        .upload(bucketPath, file)
 
-      if (error) throw error
+      if (uploadError) throw uploadError
+
+      // Déterminer le type
+      const type = file.type.startsWith('audio/')
+        ? 'audio'
+        : file.type.startsWith('video/')
+        ? 'video'
+        : 'image'
+
+      const res = await fetch('/api/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bucket_path: bucketPath, type, folder: folderName }),
+      })
+
+      if (!res.ok) throw new Error('Erreur lors de l\'enregistrement en BDD')
 
       updateProgress(file.name, { status: 'completed', progress: 100 })
       return true

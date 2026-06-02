@@ -9,14 +9,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export const BUCKET_NAME = '2025-12-20_m_aurore_laurent';
+export const BUCKET_NAME = 'test_abd_bucket';
 
 export const FOLDERS = {
   GALERIE: 'galerie',
   AUDIO: 'audio',
   ECRIT: 'ecrit',
-  GALERIE_MASQUEE: 'galerie masquee',
-  AUDIO_MASQUE: 'audio masque',
-  ECRIT_MASQUE: 'ecrit masque',
   PLANNING: 'planning',
 } as const;

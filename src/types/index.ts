@@ -3,6 +3,7 @@ export type UserRole = 'guest' | 'admin'
 export type MediaType = 'image' | 'video' | 'audio'
 
 export interface MediaItem {
+  id: string
   name: string
   url: string
   type: MediaType
@@ -10,6 +11,7 @@ export interface MediaItem {
 }
 
 export interface AudioMessage {
+  id: string
   name: string
   url: string
 }
@@ -26,7 +28,7 @@ export interface Page {
   pageNumber: number
   totalPages: number
   originalIndex: number
-  originalMessage: Message & { _filename: string }
+  originalMessage: Message & { _id: string }
 }
 
 export interface UploadProgress {

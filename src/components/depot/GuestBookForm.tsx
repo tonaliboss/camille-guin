@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Send } from 'lucide-react';
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase';
+import { saveMessage } from '@/lib/media'
 import guestbookBg from '@/assets/images/guestbook.png';
 
 function GuestbookForm() {
@@ -23,27 +24,12 @@ function GuestbookForm() {
     setIsSending(true);
 
     try {
-      const content = JSON.stringify({
-        message: message.trim(),
-        author: author.trim(),
-        date: new Date().toISOString()
-      });
-
-      const fileName = `message-${Date.now()}.json`;
-      const contentBlob = new Blob([content], { type: 'application/json' });
-      const { error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(`${FOLDERS.ECRIT}/${fileName}`, contentBlob);
-
-      if (error) throw error;
-
-      alert('Votre message a été enregistré avec succès !');
-      router.back();
+      await saveMessage(message.trim(), author.trim())
+      alert('Votre message a été enregistré avec succès !')
+      router.back()
     } catch (error) {
-      console.error('Error saving message:', error);
-      alert('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.');
-    } finally {
-      setIsSending(false);
+      console.error('Error saving message:', error)
+      alert('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.')
     }
   };
 

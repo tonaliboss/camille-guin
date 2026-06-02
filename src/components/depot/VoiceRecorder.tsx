@@ -11,6 +11,7 @@ function VoiceRecorder() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [isSending, setIsSending] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<number | null>(null);
@@ -23,7 +24,7 @@ function VoiceRecorder() {
       chunksRef.current = [];
       mediaRecorder.ondataavailable = (e) => { chunksRef.current.push(e.data); };
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/mp4' });
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
         stream.getTracks().forEach(track => track.stop());
       };
@@ -54,20 +55,33 @@ function VoiceRecorder() {
   };
 
   const uploadAudio = async () => {
-    if (!audioBlob) return;
+    if (!audioBlob) return
+    setIsSending(true)
     try {
-      const fileName = `voice-message-${Date.now()}.mp4`;
+      const fileName = `voice-message-${Date.now()}.webm`
+      const bucketPath = `${FOLDERS.AUDIO}/${fileName}`
+
       const { error } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(`${FOLDERS.AUDIO}/${fileName}`, audioBlob);
-      if (error) throw error;
-      alert('Message vocal envoyé avec succès !');
-      router.back();
+        .upload(bucketPath, audioBlob)
+      if (error) throw error
+
+      const res = await fetch('/api/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bucket_path: bucketPath, type: 'audio', folder: FOLDERS.AUDIO }),
+      })
+      if (!res.ok) throw new Error('Erreur BDD')
+
+      alert('Message vocal envoyé avec succès !')
+      router.back()
     } catch (error) {
-      console.error('Error uploading audio:', error);
-      alert('Erreur lors de l\'envoi du message. Veuillez réessayer.');
+      console.error('Error uploading audio:', error)
+      alert('Erreur lors de l\'envoi du message. Veuillez réessayer.')
+    } finally {
+      setIsSending(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen magical-background">
