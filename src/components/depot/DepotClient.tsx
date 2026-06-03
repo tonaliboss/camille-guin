@@ -3,6 +3,7 @@
 import type { UserRole, DepotSettings } from '@/types'
 import AdminHeader from '@/components/ui/AdminHeader'
 import HomeDepot from '@/components/depot/HomeDepot'
+import { usePreviewMode } from '@/hooks/usePreviewMode'
 
 interface Props {
   role: UserRole
@@ -11,9 +12,11 @@ interface Props {
 }
 
 export default function DepotClient({ role, token, settings }: Props) {
+  const { isPreview } = usePreviewMode()
+
   return (
     <div>
-      <AdminHeader role={role} token={token} context="depot" themeColor={settings.themeColor} />
+      {!isPreview && <AdminHeader role={role} token={token} context="depot" themeColor={settings.themeColor} />}
       <HomeDepot token={token} settings={settings} />
     </div>
   )

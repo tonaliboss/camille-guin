@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Upload, Image as ImageIcon, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
@@ -8,6 +8,7 @@ import FileUploadProgress from '@/components/ui/FileUploadProgress';
 import { FOLDERS } from '@/lib/supabase';
 import { formatFileSize } from '@/utils/fileOptimization';
 import photoBg from '@/assets/images/photo.png';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
 
 const PhotoUpload = () => {
   const router = useRouter();
@@ -15,6 +16,8 @@ const PhotoUpload = () => {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const { isPreview, executeIfNotPreview } = usePreviewMode()
+  const inputRef = useRef<HTMLInputElement>(null)
   
   const { uploadFiles, uploadProgress, isUploading, resetProgress } = useFileUpload(FOLDERS.GALERIE);
 
@@ -158,20 +161,30 @@ const PhotoUpload = () => {
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <div className="max-w-sm mx-auto">
+              <div className="max-w-sm mx-auto flex flex-col items-center">
                 <ImageIcon className="w-12 h-12 mx-auto mb-4 text-brown/40" />
                 <p className="text-brown/70 mb-4">Glissez-déposez vos fichiers ici ou</p>
-                <label className="btn-primary inline-flex cursor-pointer px-6 py-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    executeIfNotPreview(() => {
+                      inputRef.current?.click()
+                    })
+                  }
+                  className="btn-primary inline-flex items-center justify-center px-6 py-3"
+                >
                   <Upload size={20} />
                   Parcourir
-                  <input
-                    type="file"
-                    className="hidden"
-                    multiple
-                    accept="image/*,video/*"
-                    onChange={handleFileInput}
-                  />
-                </label>
+                </button>
+
+                <input
+                  ref={inputRef}
+                  type="file"
+                  className="hidden"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileInput}
+                />
                 <p className="text-xs text-brown/50 mt-2">
                   Formats supportés: Images (JPG, PNG, GIF) et Vidéos (MP4, MOV, AVI)
                 </p>

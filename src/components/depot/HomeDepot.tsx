@@ -7,6 +7,8 @@ import logoBolt from '@/assets/images/logobolt.png'
 import banniereBg from '@/assets/images/banniere.png'
 import { useState, useEffect } from 'react'
 import type { DepotSettings } from '@/types'
+import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { toast } from 'sonner'
 
 interface Props {
   token: string
@@ -16,6 +18,7 @@ interface Props {
 function HomeDepot({ token, settings }: Props) {
   const router = useRouter()
   const [menuUrl, setMenuUrl] = useState<string | null>(null)
+  const { isPreview } = usePreviewMode()
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -83,10 +86,28 @@ function HomeDepot({ token, settings }: Props) {
       </header>
 
       {settings.guestMessage && (
-        <div className="text-center px-6 py-6">
-          <p className="font-lora text-lg italic" style={{ color: settings.titleColor }}>
-            {settings.guestMessage}
-          </p>
+        <div className="max-w-2xl mx-auto px-6 py-8 text-center">
+          <div className="relative">
+            <span className="absolute -top-6 left-0 text-6xl opacity-20 font-serif">“</span>
+
+            <p
+              className="font-lora text-lg md:text-xl italic leading-relaxed"
+              style={{ color: settings.titleColor }}
+            >
+              {settings.guestMessage}
+            </p>
+
+            <span className="absolute -bottom-10 right-0 text-6xl opacity-20 font-serif">”</span>
+          </div>
+
+          <div className="mt-6">
+            <p
+              className="font-lora text-sm tracking-widest uppercase opacity-70"
+              style={{ color: settings.titleColor }}
+            >
+              Tiffany & Valentin
+            </p>
+          </div>
         </div>
       )}
 
@@ -100,7 +121,13 @@ function HomeDepot({ token, settings }: Props) {
             <button
               className="text-[11px] md:text-sm py-2 px-6 w-full max-w-xs mx-auto flex items-center justify-center gap-2 rounded-sm shadow-md font-inter transition-all"
               style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
-              onClick={() => router.push(`/depot/${token}/photo`)}
+              onClick={() => 
+                router.push(
+                  isPreview
+                    ? `/depot/${token}/photo?preview=1`
+                    : `/depot/${token}/photo`
+                )
+              }
             >
               <Camera size={18} className="shrink-0" />
               <span>Photos et vidéos</span>
@@ -117,7 +144,13 @@ function HomeDepot({ token, settings }: Props) {
             <button
               className="text-[11px] md:text-sm py-2 px-6 w-full max-w-[160px] mx-auto flex items-center justify-center gap-2 rounded-sm shadow-md font-inter transition-all"
               style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
-              onClick={() => router.push(`/depot/${token}/livre-or`)}
+              onClick={() => 
+                router.push(
+                  isPreview
+                    ? `/depot/${token}/livre-or?preview=1`
+                    : `/depot/${token}/livre-or`
+                )
+              }
             >
               <PenLine size={18} className="shrink-0" />
               <span>Message écrit</span>
@@ -132,7 +165,13 @@ function HomeDepot({ token, settings }: Props) {
             <button
               className="text-[11px] md:text-sm py-2 px-6 w-full max-w-[160px] mx-auto flex items-center justify-center gap-2 rounded-sm shadow-md font-inter transition-all"
               style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
-              onClick={() => router.push(`/depot/${token}/message-vocal`)}
+              onClick={() => 
+                router.push(
+                  isPreview
+                    ? `/depot/${token}/message-vocal?preview=1`
+                    : `/depot/${token}/message-vocal`
+                )
+              }
             >
               <Mic size={18} className="shrink-0" />
               <span>Message audio</span>
@@ -151,7 +190,7 @@ function HomeDepot({ token, settings }: Props) {
             <button
               className="text-[11px] md:text-sm py-2 px-6 w-full max-w-xs mx-auto flex items-center justify-center gap-2 rounded-sm shadow-md font-inter transition-all"
               style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
-              onClick={() => menuUrl ? window.open(menuUrl, '_blank') : alert('Aucun menu disponible pour le moment.')}
+              onClick={() => menuUrl ? window.open(menuUrl, '_blank') : toast.warning('Aucun menu disponible pour le moment.')}
             >
               <UtensilsCrossed size={18} className="shrink-0" />
               <span>Voir le menu</span>

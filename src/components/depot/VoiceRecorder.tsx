@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Mic, Square, ArrowLeft, Send, Heart } from 'lucide-react';
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase';
 import audioBg from '@/assets/images/audio.png';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { toast } from 'sonner'
 
 function VoiceRecorder() {
   const router = useRouter();
@@ -15,6 +17,8 @@ function VoiceRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<number | null>(null);
+  const { isPreview, executeIfNotPreview } = usePreviewMode()
+  console.log('isPreview', isPreview)
 
   const startRecording = async () => {
     try {
@@ -36,7 +40,7 @@ function VoiceRecorder() {
       }, 1000);
     } catch (err) {
       console.error('Error accessing microphone:', err);
-      alert('Impossible d\'accéder au microphone. Veuillez vérifier les permissions.');
+      toast.error('Impossible d\'accéder au microphone. Veuillez vérifier les permissions.');
     }
   };
 
@@ -73,11 +77,11 @@ function VoiceRecorder() {
       })
       if (!res.ok) throw new Error('Erreur BDD')
 
-      alert('Message vocal envoyé avec succès !')
+      toast.success('Message vocal envoyé avec succès !')
       router.back()
     } catch (error) {
       console.error('Error uploading audio:', error)
-      alert('Erreur lors de l\'envoi du message. Veuillez réessayer.')
+      toast.error('Erreur lors de l\'envoi du message. Veuillez réessayer.')
     } finally {
       setIsSending(false)
     }
@@ -142,7 +146,7 @@ function VoiceRecorder() {
                   </>
                 ) : (
                   <button
-                    onClick={startRecording}
+                    onClick={() => executeIfNotPreview(startRecording)}
                     className="w-16 h-16 rounded-full bg-brown/10 flex items-center justify-center hover:bg-brown/20 transition-colors"
                   >
                     <Mic className="text-brown" size={32} />

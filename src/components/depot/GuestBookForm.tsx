@@ -3,21 +3,29 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Send } from 'lucide-react';
-import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase';
 import { saveMessage } from '@/lib/media'
 import guestbookBg from '@/assets/images/guestbook.png';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { toast } from 'sonner'
 
 function GuestbookForm() {
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [author, setAuthor] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const { isPreview } = usePreviewMode()
+  console.log('isPreview', isPreview)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isPreview) {
+      toast.warning('Cette action n’est pas disponible en mode prévisualisation');
+      return;
+    }
     
     if (!message.trim() || !author.trim()) {
-      alert('Veuillez remplir tous les champs');
+      toast.warning('Veuillez remplir tous les champs');
       return;
     }
 
@@ -25,11 +33,11 @@ function GuestbookForm() {
 
     try {
       await saveMessage(message.trim(), author.trim())
-      alert('Votre message a été enregistré avec succès !')
+      toast.success('Votre message a été enregistré avec succès !')
       router.back()
     } catch (error) {
       console.error('Error saving message:', error)
-      alert('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.')
+      toast.error('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.')
     }
   };
 
