@@ -12,8 +12,7 @@ export const tokens = {
   // ── Layout ──────────────────────────────────────────────────────────────
   layout: {
     page: 'min-h-screen bg-stone-200 flex justify-center font-sans selection:bg-black selection:text-white',
-    container: 'w-full max-w-md bg-[#FAFAFA] min-h-screen relative flex flex-col shadow-2xl overflow-hidden pb-24',
-  },
+    container: 'w-full max-w-md bg-[#FAFAFA] min-h-screen relative flex flex-col shadow-2xl',  },
 
   // ── Cards / Surfaces ─────────────────────────────────────────────────────
   card: {
@@ -21,6 +20,7 @@ export const tokens = {
     padding: 'p-7',
     alt: 'bg-[#F5F4F1] rounded-[32px] border border-stone-200/60',
     sm: 'bg-white rounded-[28px] shadow-card border border-stone-100/80 p-5',
+    subtle: 'bg-stone-50/80 border border-stone-200/50 rounded-[24px] p-5 text-center flex flex-col items-center',
   },
 
   // ── Boutons ──────────────────────────────────────────────────────────────
@@ -29,6 +29,7 @@ export const tokens = {
     secondary: 'w-full py-4 px-6 bg-stone-50 text-black border border-stone-100 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-stone-100 hover:border-stone-200 transition-all active:scale-[0.98]',
     ghost: 'flex items-center gap-2 text-stone-400 hover:text-black transition-colors',
     sm: 'py-2.5 px-3 rounded-full text-[10px] font-semibold tracking-wide flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all',
+    outline: 'w-full py-3 px-4 rounded-full text-[12px] font-semibold tracking-wide border transition-all active:scale-[0.98] flex items-center justify-center gap-2',
   },
 
   // ── Typographie ──────────────────────────────────────────────────────────
@@ -55,7 +56,7 @@ export const tokens = {
 
   // ── Navigation ───────────────────────────────────────────────────────────
   nav: {
-    pill: 'fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-[380px] bg-white/50 backdrop-blur-2xl border border-stone-300/50 rounded-full px-2 py-3 flex justify-between items-center z-50 shadow-nav',
+    pill: 'absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-[380px] bg-white/50 backdrop-blur-2xl border border-stone-300/50 rounded-full px-2 py-3 flex justify-between items-center z-50 shadow-nav',
     itemActive: 'text-black',
     itemInactive: 'text-stone-400 hover:text-black',
   },

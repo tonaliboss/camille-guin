@@ -6,6 +6,7 @@ import { QrCode, Images, User } from 'lucide-react'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import type { UserRole } from '@/types'
+import { usePreviewMode } from '@/hooks/usePreviewMode'
 
 interface Props {
   children: React.ReactNode
@@ -16,6 +17,7 @@ interface Props {
 export default function AppLayout({ children, token, role }: Props) {
   const pathname = usePathname()
   const router = useRouter()
+  const { isPreview } = usePreviewMode()
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -51,29 +53,32 @@ export default function AppLayout({ children, token, role }: Props) {
   return (
     <div className={tokens.layout.page}>
       <div className={tokens.layout.container}>
-        {children}
-
-        {/* Navigation pill flottante */}
-        <div className={tokens.nav.pill}>
-          {navItems.map(({ icon: Icon, label, active, onClick }) => (
-            <button
-              key={label}
-              onClick={onClick}
-              className={cn(
-                'flex flex-col items-center justify-center gap-1.5 transition-colors flex-1',
-                active ? tokens.nav.itemActive : tokens.nav.itemInactive
-              )}
-            >
-              <Icon strokeWidth={active ? 2 : 1.5} className="w-5 h-5" />
-              <span className={tokens.text.navLabel}>
-                {label.split('\n').map((line, i) => (
-                  <span key={i} className="block">{line}</span>
-                ))}
-              </span>
-            </button>
-          ))}
+        <div className="flex-1">
+          {children}
         </div>
-      </div>
+
+        {role === 'admin' && !isPreview && (
+          <div className="sticky bottom-6 mx-5 bg-white/50 backdrop-blur-2xl border border-stone-300/50 rounded-full px-2 py-3 flex justify-between items-center z-50 shadow-nav mb-6">
+            {navItems.map(({ icon: Icon, label, active, onClick }) => (
+              <button
+                key={label}
+                onClick={onClick}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-1.5 transition-colors flex-1',
+                  active ? tokens.nav.itemActive : tokens.nav.itemInactive
+                )}
+              >
+                <Icon strokeWidth={active ? 2 : 1.5} className="w-5 h-5" />
+                <span className={tokens.text.navLabel}>
+                  {label.split('\n').map((line, i) => (
+                    <span key={i} className="block">{line}</span>
+                  ))}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
     </div>
-  )
+  </div>
+)
 }
