@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'sonner'
+import { Toaster } from '@/components/shadcn/sonner'
 
 export default function RootLayout({ children }) {
   return (
-    <html>
+    <html lang="fr">
       <body>
         {children}
-        <Toaster position="top-right" />
+        <Toaster position="bottom-center" />
       </body>
     </html>
   )

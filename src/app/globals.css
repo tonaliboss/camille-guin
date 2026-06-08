@@ -1,56 +1,79 @@
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-gradient-to-b from-beige/20 to-white text-brown font-inter text-base;
+  :root {
+    /* Couleurs */
+    --color-primary: #000000;
+    --color-primary-hover: #1c1917;
+    --color-surface: #FAFAFA;
+    --color-surface-alt: #F5F4F1;
+    --color-border: rgba(231, 229, 228, 0.8);
+    --color-muted: #78716c;
+    --color-muted-light: #a8a29e;
+
+    /* Rayons */
+    --radius-card: 32px;
+    --radius-card-sm: 28px;
+    --radius-button: 9999px;
+    --radius-icon: 16px;
+
+    /* Ombres */
+    --shadow-card: 0 4px 24px rgb(0, 0, 0, 0.04);
+    --shadow-nav: 0 10px 40px rgb(0, 0, 0, 0.08);
+    --shadow-button: 0 4px 12px rgb(0, 0, 0, 0.1);
+
+    /* Shadcn */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 28 6% 47%;
+    --border: 30 6% 90%;
+    --ring: 0 0% 0%;
+    --radius: 0.75rem;
   }
+
+  * {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-stone-200 font-['Inter'] text-black selection:bg-black selection:text-white;
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply font-lora;
+    @apply font-['Lora'];
   }
 }
 
+/* Classes utilitaires globales qu'on garde pour la galerie */
 .magical-background {
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 20%, rgba(200, 177, 160, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(113, 128, 92, 0.1) 0%, transparent 50%),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.95));
   background-attachment: fixed;
 }
 
-.btn-primary {
-  @apply bg-brown text-white font-inter rounded-sm transition-all hover:bg-brown/90 flex items-center justify-center gap-2 relative overflow-hidden shadow-md;
-  &::before {
-    content: '';
-    @apply absolute inset-0 bg-white/10 scale-x-0 origin-left transition-transform duration-300;
+/* Animations Framer Motion helper */
+@layer utilities {
+  .animate-fade-up {
+    animation: fade-up 0.6s ease forwards;
   }
-  &:hover::before {
-    @apply scale-x-100;
-  }
-}
 
-.btn-secondary {
-  @apply bg-sage text-white font-inter rounded-sm transition-all hover:bg-sage/90 flex items-center justify-center gap-2 relative overflow-hidden shadow-md;
-  &::before {
-    content: '';
-    @apply absolute inset-0 bg-white/10 scale-x-0 origin-left transition-transform duration-300;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  &:hover::before {
-    @apply scale-x-100;
-  }
-}
-
-.section-title {
-  @apply font-lora text-4xl text-brown mb-4 font-medium relative inline-block;
-  &::after {
-    content: '';
-    @apply absolute -bottom-2 left-1/2 w-12 h-0.5 bg-sage/30 -translate-x-1/2;
-  }
-}
-
-.section-subtitle {
-  @apply font-inter text-lg text-brown/80 mb-8;
 }
