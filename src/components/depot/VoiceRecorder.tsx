@@ -94,7 +94,7 @@ export default function VoiceRecorder() {
                 <div className="w-16 h-16 rounded-full bg-red-50 border border-red-100 flex items-center justify-center animate-pulse">
                   <Mic className="text-red-400" size={28} />
                 </div>
-                <p className="font-['Inter'] text-[13px] font-medium text-red-400">{formatTime(recordingTime)}</p>
+                <p className="text-[13px] font-medium text-red-400">{formatTime(recordingTime)}</p>
                 <button
                   onClick={stopRecording}
                   className="w-12 h-12 rounded-full bg-red-400 flex items-center justify-center hover:bg-red-500 transition-colors"

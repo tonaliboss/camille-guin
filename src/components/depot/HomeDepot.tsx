@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Camera, PenLine, Mic, UtensilsCrossed, Heart, User } from 'lucide-react'
+import { Camera, PenLine, Mic, UtensilsCrossed, Heart, User, FileText } from 'lucide-react'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import logoBolt from '@/assets/images/logobolt.png'
 import banniereBg from '@/assets/images/banniere.png'
@@ -14,6 +14,8 @@ import type { UserRole } from '@/types';
 import { motion } from 'motion/react';
 import { cn } from '@/components/shadcn/utils';
 import CamoriaFooter from '@/components/ui/CamoriaFooter'
+import { WEDDING_DATE, formatDate } from '@/lib/dates'
+import { Calendar } from 'lucide-react'
 
 interface Props {
   token: string
@@ -91,7 +93,7 @@ function HomeDepot({ token, settings, role }: Props) {
         <div className="relative h-full z-10 flex items-end justify-center pb-12">
           <div className="text-center text-white flex flex-col items-center">
             <p className={tokens.text.eyebrow}>Bienvenue au mariage de</p>
-            <h1 className="font-['Lora'] italic font-bold text-[44px] leading-[1.05] mt-4">
+            <h1 className="italic font-bold text-[44px] leading-[1.05] mt-4">
               {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
               <span className="text-white/90">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
@@ -100,27 +102,36 @@ function HomeDepot({ token, settings, role }: Props) {
         </div>
       </section>
 
-      {settings.guestMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className={cn(tokens.card.base, tokens.card.padding, 'mx-5 -mt-8 relative z-10')}
-        >
-          <p
-            className={cn(tokens.text.body, 'italic text-center')}
-            style={{ color: settings.titleColor + 'CC' }}
-          >
-            "{settings.guestMessage}"
-          </p>
-          <p
-            className="text-center text-[10px] tracking-widest uppercase mt-3 opacity-60"
-            style={{ color: settings.titleColor }}
-          >
-            {process.env.NEXT_PUBLIC_BRIDE_NAME} & {process.env.NEXT_PUBLIC_GROOM_NAME}
-          </p>
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className={cn(tokens.card.base, tokens.card.padding, 'mx-5 -mt-8 relative z-10')}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <Calendar strokeWidth={1.5} className="w-6 h-6 text-black" />
+          <span className=" italic font-bold text-[22px] text-black">
+            {formatDate(WEDDING_DATE)}
+          </span>
+        </div>
+
+        {settings.guestMessage && (
+          <>
+            <p
+              className={cn(tokens.text.body, 'italic')}
+              style={{ color: settings.titleColor + 'CC' }}
+            >
+              "{settings.guestMessage}"
+            </p>
+            <p
+              className={cn(tokens.text.label, 'text-[10px] mt-3 opacity-60')}
+              style={{ color: settings.titleColor }}
+            >
+              {process.env.NEXT_PUBLIC_BRIDE_NAME} & {process.env.NEXT_PUBLIC_GROOM_NAME}
+            </p>
+          </>
+        )}
+      </motion.div>
 
       <main className="px-5 mt-4 space-y-4">
         {/* Photos & vidéos — full width */}
@@ -155,7 +166,7 @@ function HomeDepot({ token, settings, role }: Props) {
             <div className={cn(tokens.icon.container, 'mb-4')}>
               <PenLine strokeWidth={1.5} className="w-6 h-6" />
             </div>
-            <h2 className="font-['Lora'] italic font-bold text-[18px] text-black mb-2 leading-tight">Livre d'or</h2>
+            <h2 className="italic font-bold text-[18px] text-black mb-2 leading-tight">Livre d'or</h2>
             <p className={cn(tokens.text.body, 'mb-6 flex-1 text-[12px]')}>Envoyez un beau message aux mariés</p>
             <button
               className={tokens.btn.outline}
@@ -175,7 +186,7 @@ function HomeDepot({ token, settings, role }: Props) {
             <div className={cn(tokens.icon.container, 'mb-4')}>
               <Mic strokeWidth={1.5} className="w-6 h-6" />
             </div>
-            <h2 className="font-['Lora'] italic font-bold text-[18px] text-black mb-2 leading-tight">Message vocal</h2>
+            <h2 className="italic font-bold text-[18px] text-black mb-2 leading-tight">Message vocal</h2>
             <p className={cn(tokens.text.body, 'mb-6 flex-1 text-[12px]')}>Enregistrez vos vœux pour les mariés</p>
             <button
               className={tokens.btn.outline}
@@ -187,26 +198,41 @@ function HomeDepot({ token, settings, role }: Props) {
           </motion.div>
         </div>
 
-        {/* Menu */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.75 }}
-          className={cn(tokens.card.alt, tokens.card.padding, 'flex flex-col items-center text-center group')}
-        >
-          <div className={cn(tokens.icon.containerWhite, 'mb-5')}>
-            <UtensilsCrossed strokeWidth={1.5} className="w-6 h-6" />
-          </div>
-          <h2 className={cn(tokens.text.cardTitle, 'mb-3')}>Menu</h2>
-          <p className={cn(tokens.text.body, 'mb-8')}>Découvrez le menu du mariage</p>
-          <button
-            className={tokens.btn.primary}
-            style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
-            onClick={() => menuUrl ? window.open(menuUrl, '_blank') : toast.warning('Aucun menu disponible pour le moment.')}
+        {(settings.menuUrl || settings.planningUrl) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.75 }}
+            className={cn(tokens.card.alt, tokens.card.padding, 'flex flex-col items-center text-center group')}
           >
-            <span>Voir le menu</span>
-          </button>
-        </motion.div>
+            <div className={cn(tokens.icon.containerWhite, 'mb-5')}>
+              <FileText strokeWidth={1.5} className="w-6 h-6" />
+            </div>
+            <h2 className={cn(tokens.text.cardTitle, 'mb-3')}>Documents</h2>
+            <p className={cn(tokens.text.body, 'mb-6')}>Consultez les documents de l'événement.</p>
+            <div className="flex flex-col w-full gap-2">
+              {settings.menuUrl && (
+                <button
+                  className={tokens.btn.primary}
+                  style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
+                  onClick={() => window.open(settings.menuUrl!, '_blank')}
+                >
+                  <UtensilsCrossed size={18} className="shrink-0" />
+                  <span>Voir le menu</span>
+                </button>
+              )}
+              {settings.planningUrl && (
+                <button
+                  className={tokens.btn.secondary}
+                  onClick={() => window.open(settings.planningUrl!, '_blank')}
+                >
+                  <FileText size={18} className="shrink-0" />
+                  <span>Voir le programme</span>
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
 
       </main>
 

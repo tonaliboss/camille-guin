@@ -48,12 +48,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    @apply bg-stone-200 font-['Inter'] text-black selection:bg-black selection:text-white;
-  }
+  *, *::before, *::after {
+      font-family: var(--font-selected, var(--font-lora));
+    }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-['Lora'];
+    span[data-font-preview] {
+      font-family: var(--preview-font) !important;
+    }
+
+  body {
+    @apply bg-stone-200 text-black selection:bg-black selection:text-white;
   }
 }
 

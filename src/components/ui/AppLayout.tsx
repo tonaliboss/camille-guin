@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { QrCode, Images, User } from 'lucide-react'
-import { tokens } from '@/lib/design-tokens'
+import { tokens, fontMap } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import type { UserRole } from '@/types'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
@@ -12,9 +12,10 @@ interface Props {
   children: React.ReactNode
   token: string
   role: UserRole
+  fontFamily?: string
 }
 
-export default function AppLayout({ children, token, role }: Props) {
+export default function AppLayout({ children, token, role, fontFamily }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const { isPreview } = usePreviewMode()
@@ -22,6 +23,13 @@ export default function AppLayout({ children, token, role }: Props) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [pathname])
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--font-selected',
+      fontMap[fontFamily ?? 'Lora']
+    )
+  }, [fontFamily])
 
   const isDepot = pathname === `/depot/${token}` || pathname.startsWith(`/depot/${token}/`) && !pathname.includes('galerie')
   const isGalerie = pathname.startsWith(`/galerie/${token}`)
@@ -50,7 +58,10 @@ export default function AppLayout({ children, token, role }: Props) {
 
   return (
     <div className={tokens.layout.page}>
-      <div className={tokens.layout.container}>
+      <div 
+        className={tokens.layout.container}
+        style={{ '--font-selected': fontMap[fontFamily ?? 'Lora'] } as React.CSSProperties}
+      >
         <div className="flex-1">
           {children}
         </div>

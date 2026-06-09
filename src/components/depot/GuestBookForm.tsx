@@ -55,7 +55,7 @@ export default function GuestbookForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-['Inter'] uppercase tracking-widest text-stone-400 mb-2">
+              <label className="block text-[11px] uppercase tracking-widest text-stone-400 mb-2">
                 Votre message
               </label>
               <textarea
@@ -66,7 +66,7 @@ export default function GuestbookForm() {
               />
             </div>
             <div>
-              <label className="block text-[11px] font-['Inter'] uppercase tracking-widest text-stone-400 mb-2">
+              <label className="block text-[11px] uppercase tracking-widest text-stone-400 mb-2">
                 De la part de
               </label>
               <input

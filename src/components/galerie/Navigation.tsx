@@ -44,7 +44,7 @@ export default function Navigation() {
           <button
             key={section.id}
             onClick={() => scrollToSection(section.id)}
-            className={`relative flex flex-col items-center text-[12px] font-['Inter'] tracking-[0.05em] leading-4 transition-colors duration-300 ${
+            className={`relative flex flex-col items-center text-[12px] tracking-[0.05em] leading-4 transition-colors duration-300 ${
               activeSection === section.id ? 'text-black' : 'text-stone-400 hover:text-stone-600'
             }`}
           >

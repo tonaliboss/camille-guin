@@ -20,6 +20,9 @@ export async function getSettings(): Promise<DepotSettings> {
       titleColor: '#3C1F0F',
       buttonTextColor: '#ffffff',
       guestMessage: '',
+      menuUrl: null,
+      planningUrl: null,
+      fontFamily: 'Lora',
     }
   }
 

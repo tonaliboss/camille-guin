@@ -2,6 +2,8 @@ export type UserRole = 'guest' | 'admin'
 
 export type MediaType = 'image' | 'video' | 'audio'
 
+export type FontFamily = 'Lora' | 'Playfair_Display' | 'Cormorant_Garamond' | 'Great_Vibes' | 'Montserrat' | 'EB_Garamond'
+
 export interface MediaItem {
   id: string
   name: string
@@ -46,4 +48,7 @@ export interface DepotSettings {
   titleColor: string
   buttonTextColor: string
   guestMessage: string
+  menuUrl: string | null
+  planningUrl: string | null
+  fontFamily: FontFamily
 }

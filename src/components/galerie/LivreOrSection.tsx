@@ -291,11 +291,11 @@ export default function LivreOrSection({ role }: Props) {
               className="text-center w-full"
             >
               <div className="text-[40px] font-serif text-stone-200 leading-none h-6 mb-4">"</div>
-              <p className="font-['Lora'] italic text-[20px] leading-[1.6] text-black mb-8 px-4">
+              <p className="italic text-[20px] leading-[1.6] text-black mb-8 px-4">
                 {currentPageData.message}
               </p>
               {currentPageData.author && (
-                <p className="font-['Inter'] font-bold text-[10px] tracking-[0.2em] uppercase text-stone-400">
+                <p className="font-bold text-[10px] tracking-[0.2em] uppercase text-stone-400">
                   {currentPageData.author}
                 </p>
               )}
@@ -347,9 +347,9 @@ export default function LivreOrSection({ role }: Props) {
                 >
                   <Eye className="w-4 h-4" />
                 </button>
-                <p className="font-['Lora'] italic text-[16px] text-black leading-relaxed text-center">{msg.message}</p>
+                <p className="italic text-[16px] text-black leading-relaxed text-center">{msg.message}</p>
                 {msg.author && (
-                  <p className="font-['Inter'] text-[10px] tracking-widest uppercase text-stone-400 text-center mt-3">{msg.author}</p>
+                  <p className="text-[10px] tracking-widest uppercase text-stone-400 text-center mt-3">{msg.author}</p>
                 )}
               </div>
             ))}

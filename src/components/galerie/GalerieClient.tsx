@@ -12,7 +12,7 @@ interface Props {
 
 export default function GalerieClient({ role, token, settings }: Props) {
   return (
-    <AppLayout role={role} token={token}>
+    <AppLayout role={role} token={token} fontFamily={settings.fontFamily}>
       <HomeGalerie role={role} token={token} settings={settings} />
     </AppLayout>
   )

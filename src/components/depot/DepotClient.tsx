@@ -15,7 +15,7 @@ export default function DepotClient({ role, token, settings }: Props) {
   const { isPreview } = usePreviewMode()
 
   return (
-    <AppLayout role={role} token={token}>
+    <AppLayout role={role} token={token} fontFamily={settings.fontFamily}>
       <HomeDepot role={role} token={token} settings={settings} />
     </AppLayout>
   )

@@ -2,17 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { Link, Upload, Eye, LogOut, Type, Palette, ImageIcon, Check, ChevronDown, ChevronUp, Copy } from 'lucide-react'
-import { supabase, BUCKET_NAME } from '@/lib/supabase'
+import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import banniereBg from '@/assets/images/banniere.png'
 import type { DepotSettings } from '@/types'
-import { tokens } from '@/lib/design-tokens'
+import { tokens, fontMap } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import { toast } from 'sonner'
 import AppLayout from '@/components/ui/AppLayout'
 import { Calendar, HardDrive, Film } from 'lucide-react'
 import { WEDDING_DATE, formatDate, getStorageExpiryDate, getVideoDeliveryDate } from '@/lib/dates'
+import type { FontFamily } from '@/types'
 
 interface Props {
   settings: DepotSettings
@@ -51,6 +52,15 @@ const THEME_COLORS: ThemeSwatch[] = [
   { label: 'Bordeaux',   color: '#60071d', buttonColor: '#ecded2', titleColor: '#60071d', buttonTextColor: '#60071d' },
 ]
 
+const FONTS: { label: string; value: FontFamily; preview: string }[] = [
+    { label: 'Lora', value: 'Lora', preview: 'Tiffany & Valentin' },
+    { label: 'Playfair', value: 'Playfair_Display', preview: 'Tiffany & Valentin' },
+    { label: 'Cormorant', value: 'Cormorant_Garamond', preview: 'Tiffany & Valentin' },
+    { label: 'Great Vibes', value: 'Great_Vibes', preview: 'Tiffany & Valentin' },
+    { label: 'Montserrat', value: 'Montserrat', preview: 'Tiffany & Valentin' },
+    { label: 'EB Garamond', value: 'EB_Garamond', preview: 'Tiffany & Valentin' },
+  ]
+
 async function saveSettings(patch: Partial<DepotSettings>) {
   const res = await fetch('/api/settings', {
     method: 'PATCH',
@@ -67,6 +77,46 @@ export default function TableauDeBord({ settings }: Props) {
   const [previewKey, setPreviewKey] = useState(0)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [showGalleryHelp, setShowGalleryHelp] = useState(false)
+
+  const [showPlanningUpload, setShowPlanningUpload] = useState(false)
+  const [uploadType, setUploadType] = useState<'programme' | 'menu'>('programme')
+  const [uploadingPlanning, setUploadingPlanning] = useState(false)
+  const [uploadingMenu, setUploadingMenu] = useState(false)
+  const [localMenuUrl, setLocalMenuUrl] = useState(settings.menuUrl)
+  const [localPlanningUrl, setLocalPlanningUrl] = useState(settings.planningUrl)
+  const menuInputRef = useRef<HTMLInputElement>(null)
+  const planningInputRef = useRef<HTMLInputElement>(null)
+
+  const [localFontFamily, setLocalFontFamily] = useState(settings.fontFamily ?? 'Lora')
+
+  const handleFileUpload = async (
+    file: File,
+    type: 'menu' | 'planning',
+    setUploading: (v: boolean) => void,
+    setUrl: (url: string) => void
+  ) => {
+    setUploading(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const fileName = `${FOLDERS.PLANNING}/${type}-${Date.now()}.${ext}`
+      const { error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file, { upsert: true })
+      if (error) throw error
+      const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName)
+      setUrl(data.publicUrl)
+      await saveSettings({ [`${type}Url`]: data.publicUrl })
+      toast.success(`${type === 'menu' ? 'Menu' : 'Programme'} uploadé !`)
+    } catch {
+      toast.error('Erreur lors de l\'upload')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleDeleteFile = async (type: 'menu' | 'planning', setUrl: (url: null) => void) => {
+    await saveSettings({ [`${type}Url`]: null })
+    setUrl(null)
+    toast.success(`${type === 'menu' ? 'Menu' : 'Programme'} supprimé`)
+  }
 
   const [origin, setOrigin] = useState('')
 
@@ -124,8 +174,10 @@ export default function TableauDeBord({ settings }: Props) {
         titleColor: localTitleColor,
         buttonTextColor: localButtonTextColor,
         guestMessage: localGuestMessage,
+        fontFamily: localFontFamily,
       })
       setPreviewKey(prev => prev + 1)
+      router.refresh()
       toast.success('Modifications enregistrées !')
     } catch {
       toast.error('Erreur lors de la sauvegarde')
@@ -149,7 +201,7 @@ export default function TableauDeBord({ settings }: Props) {
   }
 
   return (
-    <AppLayout role="admin" token={process.env.NEXT_PUBLIC_DEPOT_TOKEN!}>
+    <AppLayout role="admin" token={process.env.NEXT_PUBLIC_DEPOT_TOKEN!} fontFamily={settings.fontFamily}>
       <div className="pb-8">
 
         {/* Header */}
@@ -177,7 +229,7 @@ export default function TableauDeBord({ settings }: Props) {
               </div>
               <div className="flex flex-col">
                 <p className="text-[9px] font-bold tracking-widest uppercase text-stone-400 mb-0.5">Événement</p>
-                <p className="text-[16px] font-['Lora'] italic font-bold text-stone-500 leading-none">
+                <p className="text-[16px] italic font-bold text-stone-500 leading-none">
                   {formatDate(WEDDING_DATE)}
                 </p>
               </div>
@@ -229,6 +281,84 @@ export default function TableauDeBord({ settings }: Props) {
                 <span>Copier</span>
               </div>
             </button>
+
+            {/* Menu */}
+            <div className={cn(tokens.card.alt, 'p-4 mt-4 space-y-3')}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[13px] font-semibold text-black">Menu</h3>
+                  <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+                </div>
+                {localMenuUrl && (
+                  <a href={localMenuUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
+                    Voir
+                  </a>
+                )}
+              </div>
+              {localMenuUrl ? (
+                <button
+                  onClick={() => handleDeleteFile('menu', setLocalMenuUrl)}
+                  className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
+                >
+                  Supprimer le menu
+                </button>
+              ) : (
+                <button
+                  onClick={() => menuInputRef.current?.click()}
+                  disabled={uploadingMenu}
+                  className={cn(tokens.btn.secondary, 'border-dashed')}
+                >
+                  <Upload className="w-4 h-4" />
+                  {uploadingMenu ? 'Envoi...' : 'Importer un menu'}
+                </button>
+              )}
+              <input
+                ref={menuInputRef}
+                type="file"
+                accept=".pdf,image/*"
+                className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'menu', setUploadingMenu, setLocalMenuUrl) }}
+              />
+            </div>
+
+            {/* Programme */}
+            <div className={cn(tokens.card.alt, 'p-4 mt-2 space-y-3')}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[13px] font-semibold text-black">Programme</h3>
+                  <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+                </div>
+                {localPlanningUrl && (
+                  <a href={localPlanningUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
+                    Voir
+                  </a>
+                )}
+              </div>
+              {localPlanningUrl ? (
+                <button
+                  onClick={() => handleDeleteFile('planning', setLocalPlanningUrl)}
+                  className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
+                >
+                  Supprimer le programme
+                </button>
+              ) : (
+                <button
+                  onClick={() => planningInputRef.current?.click()}
+                  disabled={uploadingPlanning}
+                  className={cn(tokens.btn.secondary, 'border-dashed')}
+                >
+                  <Upload className="w-4 h-4" />
+                  {uploadingPlanning ? 'Envoi...' : 'Importer un programme'}
+                </button>
+              )}
+              <input
+                ref={planningInputRef}
+                type="file"
+                accept=".pdf,image/*"
+                className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'planning', setUploadingPlanning, setLocalPlanningUrl) }}
+              />
+            </div>
           </motion.div>
 
           {/* Galerie digitale */}
@@ -393,7 +523,7 @@ export default function TableauDeBord({ settings }: Props) {
                 <div className="h-8 px-4 rounded-full text-[12px] font-semibold flex items-center shadow-sm" style={{ backgroundColor: localThemeColor, color: localButtonTextColor }}>
                   Aperçu
                 </div>
-                <span className="font-['Lora'] italic font-bold text-[16px]" style={{ color: localTitleColor }}>Titre</span>
+                <span className="italic font-bold text-[16px]" style={{ color: localTitleColor }}>Titre</span>
               </div>
 
               {/* Thème original */}
@@ -423,6 +553,36 @@ export default function TableauDeBord({ settings }: Props) {
                 })}
               </div>
             </div>
+
+            {/* Police */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-1">
+                  <Type className="w-4 h-4 text-stone-400" />
+                  <h3 className="text-[13px] font-semibold text-black">Police</h3>
+                </div>
+                <p className={cn(tokens.text.body, 'mb-4 text-[11px]')}>S'applique à tout le texte de la plateforme.</p>
+                <div className="space-y-2">
+                  {FONTS.map(font => (
+                    <button
+                      key={font.value}
+                      onClick={() => setLocalFontFamily(font.value)}
+                      className={cn(
+                        'w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 transition-all',
+                        localFontFamily === font.value ? 'border-black bg-white' : 'border-transparent bg-white/60 hover:bg-white'
+                      )}
+                    >
+                      <span className="text-[11px] font-medium text-stone-400 uppercase tracking-widest">{font.label}</span>
+                      <span
+                        data-font-preview
+                        className="text-[18px] italic"
+                        style={{ '--preview-font': fontMap[font.value] } as React.CSSProperties}
+                      >
+                        {font.preview}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
             {/* Bouton enregistrer */}
             <button

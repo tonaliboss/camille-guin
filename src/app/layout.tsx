@@ -2,10 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from '@/components/shadcn/sonner'
+import { Lora, Playfair_Display, Cormorant_Garamond, Great_Vibes, Montserrat, EB_Garamond } from 'next/font/google'
+
+const lora = Lora({ subsets: ['latin'], variable: '--font-lora' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'], variable: '--font-cormorant' })
+const greatVibes = Great_Vibes({ subsets: ['latin'], weight: '400', variable: '--font-great-vibes' })
+const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' })
+const ebGaramond = EB_Garamond({ subsets: ['latin'], variable: '--font-eb-garamond' })
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={`${lora.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} ${ebGaramond.variable}`}>
       <body>
         {children}
         <Toaster position="top-center" />

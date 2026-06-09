@@ -77,7 +77,7 @@ export default function HomeGalerie({ role, token, settings }: Props) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 0.9, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-              className="font-['Lora'] italic font-bold text-[44px] leading-[1.05] mt-4"
+              className="italic font-bold text-[44px] leading-[1.05] mt-4"
             >
               {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
