@@ -244,6 +244,9 @@ export default function LivreOrSection({ role }: Props) {
           <h2 className={tokens.section.title}>Livre d'Or</h2>
           <div className={tokens.section.divider} />
         </div>
+        {allPages.length > 0 && (
+          <p className="text-[11px] text-stone-400 mt-2">{allPages.length} élément{allPages.length > 1 ? 's' : ''}</p>
+        )}
       </div>
 
       {role === 'admin' && allPages.length > 0 && (
@@ -337,6 +340,9 @@ export default function LivreOrSection({ role }: Props) {
               <h3 className={tokens.section.title}>Messages masqués</h3>
               <div className={tokens.section.divider} />
             </div>
+            {hiddenMessages.length > 0 && (
+              <p className="text-[11px] text-stone-400 mt-2">{hiddenMessages.length} élément{hiddenMessages.length > 1 ? 's' : ''}</p>
+            )}
           </div>
           <div className="space-y-3">
             {hiddenMessages.map((msg, index) => (

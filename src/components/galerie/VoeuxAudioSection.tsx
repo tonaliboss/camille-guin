@@ -116,6 +116,10 @@ export default function VoeuxAudioSection({ role }: Props) {
   const [players, setPlayers] = useState<{ [id: string]: AudioPlayerState }>({})
   const audioRefs = useRef<{ [id: string]: HTMLAudioElement | null }>({})
 
+  const INITIAL_AUDIO = 3
+  const [showAllAudio, setShowAllAudio] = useState(false)
+  const [showAllHiddenAudio, setShowAllHiddenAudio] = useState(false)
+
   const loadAudio = useCallback(async () => {
     setLoading(true)
     const [pub, hidden] = await Promise.all([
@@ -235,6 +239,9 @@ export default function VoeuxAudioSection({ role }: Props) {
           <h2 className={tokens.section.title}>Mots Vocaux</h2>
           <div className={tokens.section.divider} />
         </div>
+        {audioMessages.length > 0 && (
+          <p className="text-[11px] text-stone-400 mt-2">{audioMessages.length} élément{audioMessages.length > 1 ? 's' : ''}</p>
+        )}
       </div>
 
       {role === 'admin' && audioMessages.length > 0 && (
@@ -257,7 +264,7 @@ export default function VoeuxAudioSection({ role }: Props) {
         <p className={cn(tokens.text.body, 'text-center')}>Aucun message audio disponible</p>
       ) : (
         <div className="border-t border-stone-200/60">
-          {audioMessages.map((audio, index) => (
+          {audioMessages.slice(0, showAllAudio ? undefined : INITIAL_AUDIO).map((audio, index) => (
             <AudioRow
               key={audio.id}
               audio={audio}
@@ -276,6 +283,14 @@ export default function VoeuxAudioSection({ role }: Props) {
           ))}
         </div>
       )}
+      {audioMessages.length > INITIAL_AUDIO && (
+        <button
+          onClick={() => setShowAllAudio(!showAllAudio)}
+          className={cn(tokens.btn.outline, 'mt-4')}
+        >
+          {showAllAudio ? 'Voir moins' : `Voir tout (+${audioMessages.length - INITIAL_AUDIO})`}
+        </button>
+      )}
 
       {role === 'admin' && hiddenAudio.length > 0 && (
         <div className="mt-12 pt-8 border-t border-stone-100">
@@ -286,9 +301,12 @@ export default function VoeuxAudioSection({ role }: Props) {
               <h3 className={tokens.section.title}>Messages masqués</h3>
               <div className={tokens.section.divider} />
             </div>
+            {hiddenAudio.length > 0 && (
+              <p className="text-[11px] text-stone-400 mt-2">{hiddenAudio.length} élément{hiddenAudio.length > 1 ? 's' : ''}</p>
+            )}
           </div>
           <div className="border-t border-stone-200/60">
-            {hiddenAudio.map((audio, index) => (
+            {hiddenAudio.slice(0, showAllHiddenAudio ? undefined : INITIAL_AUDIO).map((audio, index) => (
               <AudioRow
                 key={audio.id}
                 audio={audio}
@@ -307,6 +325,14 @@ export default function VoeuxAudioSection({ role }: Props) {
             ))}
           </div>
         </div>
+      )}
+      {hiddenAudio.length > INITIAL_AUDIO && (
+        <button
+          onClick={() => setShowAllHiddenAudio(!showAllHiddenAudio)}
+          className={cn(tokens.btn.secondary, 'mt-4')}
+        >
+          {showAllHiddenAudio ? 'Voir moins' : `Voir tout (+${hiddenAudio.length - INITIAL_AUDIO})`}
+        </button>
       )}
     </section>
   )

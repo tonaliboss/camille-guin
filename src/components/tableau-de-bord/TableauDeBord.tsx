@@ -14,6 +14,7 @@ import AppLayout from '@/components/ui/AppLayout'
 import { Calendar, HardDrive, Film } from 'lucide-react'
 import { WEDDING_DATE, formatDate, getStorageExpiryDate, getVideoDeliveryDate } from '@/lib/dates'
 import type { FontFamily } from '@/types'
+import LogoPill from '@/components/ui/LogoPill'
 
 interface Props {
   settings: DepotSettings
@@ -205,11 +206,12 @@ export default function TableauDeBord({ settings }: Props) {
       <div className="pb-8">
 
         {/* Header */}
-        <header className="pt-16 pb-8 px-5 bg-[#FAFAFA]">
+        <header className="pt-8 pb-8 px-5 bg-[#FAFAFA] flex flex-col items-center gap-6">
+          <LogoPill />
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={cn(tokens.text.title, 'text-[36px]')}
+            className={cn(tokens.text.title, 'text-[36px] text-center')}
           >
             Espace <br /><span style={{ color: '#4a5443' }}>Hôtes</span>
           </motion.h1>

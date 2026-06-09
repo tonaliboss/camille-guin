@@ -20,6 +20,10 @@ export default function GalerieSection({ role }: Props) {
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
 
+  const INITIAL_PHOTOS = 6
+  const [showAllMedia, setShowAllMedia] = useState(false)
+  const [showAllHidden, setShowAllHidden] = useState(false)
+
   const loadMedia = async () => {
     setLoading(true)
     const [pub, hidden] = await Promise.all([
@@ -105,6 +109,9 @@ export default function GalerieSection({ role }: Props) {
             <h2 className={tokens.section.title}>Galerie digitale</h2>
             <div className={tokens.section.divider} />
           </div>
+          {media.length > 0 && (
+            <p className="text-[11px] text-stone-400 mt-2">{media.length} élément{media.length > 1 ? 's' : ''}</p>
+          )}
         </div>
 
         {/* Bouton télécharger tout — admin */}
@@ -133,7 +140,7 @@ export default function GalerieSection({ role }: Props) {
           <p className={cn(tokens.text.body, 'text-center')}>Aucune photo ou vidéo disponible</p>
         ) : (
           <div className="columns-2 gap-3 space-y-3">
-            {media.map((item, index) => (
+            {media.slice(0, showAllMedia ? undefined : INITIAL_PHOTOS).map((item, index) => (
               <div
                 key={item.id}
                 className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
@@ -142,7 +149,7 @@ export default function GalerieSection({ role }: Props) {
                 {role === 'admin' && (
                   <button
                     onClick={e => { e.stopPropagation(); hideMedia(item) }}
-                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full transition z-10"
                   >
                     <EyeOff className="w-4 h-4 text-white" />
                   </button>
@@ -157,6 +164,14 @@ export default function GalerieSection({ role }: Props) {
             ))}
           </div>
         )}
+        {media.length > INITIAL_PHOTOS && (
+          <button
+            onClick={() => setShowAllMedia(!showAllMedia)}
+            className={cn(tokens.btn.outline, 'mt-4')}
+          >
+            {showAllMedia ? 'Voir moins' : `Voir tout (+${media.length - INITIAL_PHOTOS})`}
+          </button>
+        )}
 
         {/* Galerie masquée — admin */}
         {role === 'admin' && hiddenMedia.length > 0 && (
@@ -168,13 +183,16 @@ export default function GalerieSection({ role }: Props) {
                 <h2 className={tokens.section.title}>Galerie masquée</h2>
                 <div className={tokens.section.divider} />
               </div>
+              {hiddenMedia.length > 0 && (
+                <p className="text-[11px] text-stone-400 mt-2">{hiddenMedia.length} élément{hiddenMedia.length > 1 ? 's' : ''}</p>
+              )}
             </div>
             <div className="columns-2 gap-3 space-y-3">
-              {hiddenMedia.map(item => (
+              {hiddenMedia.slice(0, showAllHidden ? undefined : INITIAL_PHOTOS).map(item => (
                 <div key={item.id} className="break-inside-avoid rounded-[6px] overflow-hidden group relative bg-stone-100">
                   <button
                     onClick={() => unhideMedia(item)}
-                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full transition z-10"
                   >
                     <Eye className="w-4 h-4 text-white" />
                   </button>
@@ -188,11 +206,19 @@ export default function GalerieSection({ role }: Props) {
             </div>
           </div>
         )}
+        {hiddenMedia.length > INITIAL_PHOTOS && (
+          <button
+            onClick={() => setShowAllHidden(!showAllHidden)}
+            className={cn(tokens.btn.outline, 'mt-4')}
+          >
+            {showAllHidden ? 'Voir moins' : `Voir tout (+${hiddenMedia.length - INITIAL_PHOTOS})`}
+          </button>
+        )}
       </section>
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] bg-black/5 backdrop-blur-sm flex items-center justify-center p-4">
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors">
             <X className="w-8 h-8" />
           </button>

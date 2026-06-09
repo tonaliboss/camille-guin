@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/components/shadcn/utils'
 import { tokens } from '@/lib/design-tokens'
 import { toast } from 'sonner'
+import { Share2 } from 'lucide-react'
 
 export default function CamoriaFooter() {
   const [showReview, setShowReview] = useState(false)
@@ -34,6 +35,23 @@ export default function CamoriaFooter() {
       toast.error('Erreur lors de l\'envoi')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleShare = async () => {
+    const url = process.env.NEXT_PUBLIC_CAMORIA_URL ?? ''
+    const text = `Je suis au mariage de ${process.env.NEXT_PUBLIC_BRIDE_NAME} & ${process.env.NEXT_PUBLIC_GROOM_NAME} ! Ils utilisent une application que tu vas aimer 💍`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Camoria Memories', text, url })
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
+        toast.error('Erreur lors du partage')
+      }
+    } else {
+      navigator.clipboard.writeText(`${text}\n${url}`)
+      toast.success('Lien copié !')
     }
   }
 
@@ -111,6 +129,13 @@ export default function CamoriaFooter() {
         </AnimatePresence>
 
         <div className="flex w-full gap-2">
+          <button
+            onClick={handleShare}
+            className={cn(tokens.btn.sm, 'flex-1 bg-white text-black border border-stone-200/80 hover:bg-stone-50')}
+          >
+            <Share2 className="w-3 h-3" />
+            <span>Partager</span>
+          </button>
           <button
             onClick={() => setShowReview(!showReview)}
             className={cn(tokens.btn.sm, 'flex-1 bg-white text-black border border-stone-200/80 hover:bg-stone-50')}

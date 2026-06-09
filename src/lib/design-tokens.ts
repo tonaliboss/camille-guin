@@ -66,7 +66,7 @@ export const tokens = {
   // ── Header transparent (sur bannière) ────────────────────────────────────
   header: {
     floating: 'absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-6',
-    logoPill: 'bg-white/40 px-5 py-2 rounded-full backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center',
+    logoPill: 'bg-black/60 px-5 py-2 rounded-full backdrop-blur-md border border-white/20 shadow-sm flex items-center justify-center',
     iconBtn: 'p-2 rounded-full bg-white/30 backdrop-blur-md border border-white/40 shadow-sm transition-transform active:scale-95',
   },
 

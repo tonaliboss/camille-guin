@@ -16,6 +16,7 @@ import { cn } from '@/components/shadcn/utils';
 import CamoriaFooter from '@/components/ui/CamoriaFooter'
 import { WEDDING_DATE, formatDate } from '@/lib/dates'
 import { Calendar } from 'lucide-react'
+import HeroBanner from '@/components/ui/HeroBanner'
 
 interface Props {
   token: string
@@ -64,32 +65,7 @@ function HomeDepot({ token, settings, role }: Props) {
 
   return (
     <div>
-      <section className="relative h-[75vh] shrink-0">
-        {bannerSrc ? (
-          <img src={bannerSrc} alt="Bannière" className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0" style={bannerStyle} />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-
-        <div className={tokens.header.floating}>
-          <div className="w-9" />
-          <div className={tokens.header.logoPill}>
-            <img src={logoBolt.src} alt="Logo" className="h-6 object-contain drop-shadow-lg" />
-          </div>
-          {role !== 'admin' ? (
-            <button
-              onClick={() => !isPreview && router.push(`/connexion?from=/depot/${token}`)}
-              className={tokens.header.iconBtn}
-              disabled={isPreview}
-            >
-              <User strokeWidth={1.5} className="w-5 h-5" />
-            </button>
-          ) : (
-            <div className="w-9" />
-          )}
-        </div>
-
+      <HeroBanner role={role} settings={settings} connexionPath={`/connexion?from=/depot/${token}`}>
         <div className="relative h-full z-10 flex items-end justify-center pb-12">
           <div className="text-center text-white flex flex-col items-center">
             <p className={tokens.text.eyebrow}>Bienvenue au mariage de</p>
@@ -100,7 +76,7 @@ function HomeDepot({ token, settings, role }: Props) {
             </h1>
           </div>
         </div>
-      </section>
+      </HeroBanner>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

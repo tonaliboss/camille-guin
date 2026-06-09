@@ -33,7 +33,7 @@ export default function AdminLoginForm({ from }: Props) {
     })
 
     if (res.ok) {
-      router.push(from ?? '/')
+      router.push(from ?? '/tableau-de-bord')
     } else {
       setError(true)
       setCode('')
