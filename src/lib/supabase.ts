@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export const BUCKET_NAME = 'test_abd_bucket';
+export const BUCKET_NAME = process.env.NEXT_PUBLIC_BUCKET_NAME!;
 
 export const FOLDERS = {
   GALERIE: 'galerie',

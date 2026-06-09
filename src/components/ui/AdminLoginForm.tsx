@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, ArrowLeft } from 'lucide-react'
+import { tokens } from '@/lib/design-tokens'
+import { cn } from '@/components/shadcn/utils'
+import { toast } from 'sonner'
 
 interface Props {
   from?: string
@@ -36,65 +39,62 @@ export default function AdminLoginForm({ from }: Props) {
       setCode('')
       setTimeout(() => setError(false), 2000)
     }
-
+    
     setIsLoading(false)
   }
 
   return (
-    <div className="min-h-screen magical-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {from && (
-          <button
-            onClick={() => router.push(from)}
-            className="mb-6 flex items-center text-brown/60 hover:text-brown transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Retour
-          </button>
-        )}
+    <div className={tokens.layout.page}>
+      <div className={cn(tokens.layout.container, 'flex items-center justify-center p-8')}>
+        <div className="w-full">
+          {from && (
+            <button
+              onClick={() => router.push(from)}
+              className={cn(tokens.btn.ghost, 'mb-6')}
+            >
+              <ArrowLeft size={18} />
+              Retour
+            </button>
+          )}
 
-        <div className="bg-white/90 rounded-lg shadow-lg p-8">
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-brown/10 rounded-full flex items-center justify-center">
-              <Lock className="w-8 h-8 text-brown" />
+          <div className={cn(tokens.card.base, tokens.card.padding)}>
+            <div className={cn(tokens.icon.container, 'mb-5 mx-auto')}>
+              <Lock strokeWidth={1.5} className="w-6 h-6" />
             </div>
-          </div>
 
-          <h2 className="font-lora text-2xl text-center text-brown mb-2">
-            Code d'accès admin
-          </h2>
-          <p className="text-center text-brown/60 mb-6">
-            Entrez votre code d'accès
-          </p>
+            <h2 className={cn(tokens.text.cardTitle, 'text-center mb-2')}>
+              Code d'accès admin
+            </h2>
+            <p className={cn(tokens.text.body, 'text-center mb-6')}>
+              Entrez votre code d'accès
+            </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
                 value={code}
                 onChange={handleCodeChange}
                 maxLength={6}
                 placeholder="------"
-                className={`w-full px-4 py-3 border-2 rounded-md text-center text-lg tracking-widest font-mono focus:outline-none focus:ring-2 transition-all ${
-                  error
-                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200'
-                    : 'border-beige/50 focus:border-sage focus:ring-sage/20'
-                }`}
+                className={cn(
+                  tokens.input.base,
+                  'text-center text-lg tracking-widest font-mono',
+                  error && tokens.input.error
+                )}
                 autoFocus
               />
               {error && (
-                <p className="mt-2 text-sm text-red-600 text-center">Code incorrect</p>
+                <p className="text-[12px] text-red-400 text-center">Code incorrect</p>
               )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading || code.length === 0}
-              className="btn-primary w-full py-3"
-            >
-              {isLoading ? 'Vérification...' : 'Accéder'}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isLoading || code.length === 0}
+                className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+              >
+                {isLoading ? 'Vérification...' : 'Accéder'}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

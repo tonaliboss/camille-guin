@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body>
         {children}
-        <Toaster position="bottom-center" />
+        <Toaster position="top-center" />
       </body>
     </html>
   )

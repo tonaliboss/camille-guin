@@ -13,6 +13,7 @@ import { tokens } from '@/lib/design-tokens';
 import type { UserRole } from '@/types';
 import { motion } from 'motion/react';
 import { cn } from '@/components/shadcn/utils';
+import CamoriaFooter from '@/components/ui/CamoriaFooter'
 
 interface Props {
   token: string
@@ -91,9 +92,9 @@ function HomeDepot({ token, settings, role }: Props) {
           <div className="text-center text-white flex flex-col items-center">
             <p className={tokens.text.eyebrow}>Bienvenue au mariage de</p>
             <h1 className="font-['Lora'] italic font-bold text-[44px] leading-[1.05] mt-4">
-              Tiffany
+              {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
-              <span className="text-white/90">Valentin</span>
+              <span className="text-white/90">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
             </h1>
           </div>
         </div>
@@ -116,7 +117,7 @@ function HomeDepot({ token, settings, role }: Props) {
             className="text-center text-[10px] tracking-widest uppercase mt-3 opacity-60"
             style={{ color: settings.titleColor }}
           >
-            Tiffany & Valentin
+            {process.env.NEXT_PUBLIC_BRIDE_NAME} & {process.env.NEXT_PUBLIC_GROOM_NAME}
           </p>
         </motion.div>
       )}
@@ -209,24 +210,7 @@ function HomeDepot({ token, settings, role }: Props) {
 
       </main>
 
-      <footer className="px-5 py-8 mt-4">
-        <div className={tokens.card.subtle}>
-          <h2 className="font-['Lora'] italic font-medium text-[16px] text-black mb-1.5">
-            Vous avez aimé l'expérience ?
-          </h2>
-          <p className={cn(tokens.text.body, 'mb-4 max-w-[240px] text-[12px]')}>
-            Offrez ce même niveau d'excellence pour votre prochain événement.
-          </p>
-          <div className="flex w-full gap-2">
-            <button className={cn(tokens.btn.sm, 'flex-1 bg-white text-black border border-stone-200/80 hover:bg-stone-50')}>
-              <span>Laisser un avis</span>
-            </button>
-            <button className={cn(tokens.btn.sm, 'flex-1 bg-black text-white hover:bg-stone-800')}>
-              <span>Découvrir</span>
-            </button>
-          </div>
-        </div>
-      </footer>
+      <CamoriaFooter />
     </div>
   )
 }

@@ -12,7 +12,8 @@ export const tokens = {
   // ── Layout ──────────────────────────────────────────────────────────────
   layout: {
     page: 'min-h-screen bg-stone-200 flex justify-center font-sans selection:bg-black selection:text-white',
-    container: 'w-full max-w-md bg-[#FAFAFA] min-h-screen relative flex flex-col shadow-2xl',  },
+    container: 'w-full max-w-md bg-[#FAFAFA] min-h-screen relative flex flex-col shadow-2xl',
+  },
 
   // ── Cards / Surfaces ─────────────────────────────────────────────────────
   card: {
@@ -39,6 +40,7 @@ export const tokens = {
     body: "text-[13px] font-['Inter'] font-normal text-stone-500 leading-relaxed",
     eyebrow: 'font-medium text-[10px] tracking-[0.35em] uppercase text-white/90',
     navLabel: 'text-[7px] font-bold tracking-widest uppercase text-center leading-tight',
+    label: 'font-bold tracking-widest uppercase text-stone-400',
   },
 
   // ── Conteneurs d'icônes ──────────────────────────────────────────────────
@@ -66,6 +68,14 @@ export const tokens = {
     floating: 'absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-6',
     logoPill: 'bg-white/40 px-5 py-2 rounded-full backdrop-blur-md border border-white/40 shadow-sm flex items-center justify-center',
     iconBtn: 'p-2 rounded-full bg-white/30 backdrop-blur-md border border-white/40 shadow-sm transition-transform active:scale-95',
+  },
+
+  section: {
+    eyebrow: "font-['Inter'] font-normal text-[10px] uppercase tracking-[0.2em] text-stone-400",
+    title: "font-['Lora'] italic font-bold text-[24px] text-black leading-none",
+    divider: 'w-8 h-[1px] bg-stone-300',
+    cardHeader: 'flex items-center gap-3 mb-3',
+    cardAccent: 'w-1.5 h-6 rounded-full',
   },
 
 } as const

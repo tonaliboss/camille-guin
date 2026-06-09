@@ -1,125 +1,93 @@
 'use client'
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Send } from 'lucide-react';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Send } from 'lucide-react'
 import { saveMessage } from '@/lib/media'
-import guestbookBg from '@/assets/images/guestbook.png';
-import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { tokens } from '@/lib/design-tokens'
+import { cn } from '@/components/shadcn/utils'
+import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { toast } from 'sonner'
 
-function GuestbookForm() {
-  const router = useRouter();
-  const [message, setMessage] = useState('');
-  const [author, setAuthor] = useState('');
-  const [isSending, setIsSending] = useState(false);
-  const { isPreview } = usePreviewMode()
-  console.log('isPreview', isPreview)
+export default function GuestbookForm() {
+  const router = useRouter()
+  const { executeIfNotPreview } = usePreviewMode()
+  const [message, setMessage] = useState('')
+  const [author, setAuthor] = useState('')
+  const [isSending, setIsSending] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (isPreview) {
-      toast.warning('Cette action n’est pas disponible en mode prévisualisation');
-      return;
-    }
-    
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!message.trim() || !author.trim()) {
-      toast.warning('Veuillez remplir tous les champs');
-      return;
+      toast.warning('Veuillez remplir tous les champs')
+      return
     }
-
-    setIsSending(true);
-
-    try {
-      await saveMessage(message.trim(), author.trim())
-      toast.success('Votre message a été enregistré avec succès !')
-      router.back()
-    } catch (error) {
-      console.error('Error saving message:', error)
-      toast.error('Une erreur est survenue lors de l\'envoi. Veuillez réessayer.')
-    }
-  };
+    executeIfNotPreview(async () => {
+      setIsSending(true)
+      try {
+        await saveMessage(message.trim(), author.trim())
+        toast.success('Votre message a été enregistré !')
+        router.back()
+      } catch {
+        toast.error("Une erreur est survenue lors de l'envoi.")
+      } finally {
+        setIsSending(false)
+      }
+    })
+  }
 
   return (
-    <div className="min-h-screen relative">
-      <div 
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: `url(${guestbookBg.src})`,
-          backgroundSize: '120% auto',
-          backgroundPosition: 'left 25%',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed'
-        }}
-      />
-      
-      <div className="relative z-20">
-        <header className="bg-white/80 shadow-sm sticky top-0">
-          <div className="max-w-sm mx-auto px-3 py-2 flex items-center">
-            <button 
-              onClick={() => router.back()}
-              className="text-brown hover:text-brown/80 transition-colors"
+    <div>
+      <header className="flex items-center px-5 py-4 border-b border-stone-100">
+        <button onClick={() => router.back()} className={tokens.btn.ghost}>
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className={cn(tokens.text.title, 'text-[18px] ml-3')}>Livre d'or</h1>
+      </header>
+
+      <main className="px-5 py-6">
+        <div className={cn(tokens.card.base, tokens.card.padding)}>
+          <div className={cn(tokens.icon.container, 'mb-5 mx-auto')}>
+            <Send strokeWidth={1.5} className="w-6 h-6" />
+          </div>
+          <h2 className={cn(tokens.text.cardTitle, 'text-center mb-2')}>Laissez un message</h2>
+          <p className={cn(tokens.text.body, 'text-center mb-6')}>Partagez vos vœux aux mariés</p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-['Inter'] uppercase tracking-widest text-stone-400 mb-2">
+                Votre message
+              </label>
+              <textarea
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                className={cn(tokens.input.textarea, 'h-28')}
+                placeholder="Écrivez votre message ici..."
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-['Inter'] uppercase tracking-widest text-stone-400 mb-2">
+                De la part de
+              </label>
+              <input
+                type="text"
+                value={author}
+                onChange={e => setAuthor(e.target.value)}
+                className={tokens.input.base}
+                placeholder="Votre nom"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isSending}
+              className={cn(tokens.btn.primary, 'mt-2 disabled:opacity-50')}
             >
-              <ArrowLeft size={16} />
+              <Send size={16} />
+              {isSending ? 'Envoi en cours...' : 'Envoyer le message'}
             </button>
-            <h1 className="font-lora text-base text-brown ml-2">Livre d'or</h1>
-          </div>
-        </header>
-
-        <main className="min-h-[calc(100vh-48px)] flex items-center justify-center p-3 mt-8">
-          <div className="w-full max-w-xs ml-12 bg-white/90 rounded shadow-lg p-6">
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label 
-                  htmlFor="message" 
-                  className="block text-brown/70 text-sm md:text-lg mb-1"
-                >
-                  Laissez un beau message aux mariés
-                  <span className="text-[11px] text-brown/60 block mt-0.5">
-                    (visible que par les mariés)
-                  </span>
-                </label>
-                <textarea
-                  id="message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="w-full h-20 p-2 border border-beige/30 rounded focus:ring-1 focus:ring-sage focus:border-sage bg-white/95 text-brown text-sm resize-none"
-                  placeholder="Écrivez votre message ici..."
-                />
-              </div>
-
-              <div>
-                <label 
-                  htmlFor="author" 
-                  className="block text-brown/70 text-sm md:text-lg mb-1"
-                >
-                  De la part de qui ?
-                </label>
-                <input
-                  type="text"
-                  id="author"
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  className="w-full p-2 border border-beige/30 rounded focus:ring-1 focus:ring-sage focus:border-sage bg-white/95 text-brown text-sm"
-                  placeholder="Votre nom"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSending}
-                className="btn-primary w-full py-2 text-xs px-8"
-              >
-                <Send size={12} />
-                {isSending ? 'Envoi en cours...' : 'Envoyer le message'}
-              </button>
-            </form>
-          </div>
-        </main>
-      </div>
+          </form>
+        </div>
+      </main>
     </div>
-  );
+  )
 }
-
-export default GuestbookForm;

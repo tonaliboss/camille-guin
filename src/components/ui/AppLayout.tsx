@@ -32,7 +32,7 @@ export default function AppLayout({ children, token, role }: Props) {
       icon: QrCode,
       label: 'Plateforme\nde dépôt',
       active: isDepot,
-      onClick: () => router.push(`/depot/${token}`),
+      onClick: () => router.push(`/depot/${process.env.NEXT_PUBLIC_DEPOT_TOKEN}`),
     },
     {
       icon: Images,
@@ -44,9 +44,7 @@ export default function AppLayout({ children, token, role }: Props) {
       icon: User,
       label: 'Tableau\nde bord',
       active: isProfil,
-      onClick: () => role === 'admin'
-        ? router.push(`/depot/${token}/personnaliser`)
-        : router.push(`/connexion?from=/depot/${token}`),
+      onClick: () => router.push('/tableau-de-bord')
     },
   ]
 

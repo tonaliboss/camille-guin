@@ -5,6 +5,8 @@ import { Download, X, EyeOff, Eye } from 'lucide-react'
 import JSZip from 'jszip'
 import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
 import type { MediaItem, UserRole } from '@/types'
+import { tokens } from '@/lib/design-tokens'
+import { cn } from '@/components/shadcn/utils'
 
 interface Props {
   role: UserRole
@@ -24,8 +26,6 @@ export default function GalerieSection({ role }: Props) {
       getGalerieMedia(false),
       role === 'admin' ? getGalerieMedia(true) : Promise.resolve([]),
     ])
-    console.log('pub', pub)
-    console.log('hidden', hidden)
     setMedia(pub)
     setHiddenMedia(hidden)
     setLoading(false)
@@ -88,96 +88,109 @@ export default function GalerieSection({ role }: Props) {
   }
 
   if (loading) return (
-    <section id="galerie" className="py-20 px-4 bg-white">
-      <div className="container mx-auto text-center">
-        <h2 className="font-sans text-3xl text-stone-800 mb-12 uppercase tracking-wider">Galerie</h2>
-        <p className="text-stone-500">Chargement...</p>
-      </div>
+    <section id="galerie" className="py-20 px-5">
+      <p className={cn(tokens.text.body, 'text-center')}>Chargement...</p>
     </section>
   )
 
   return (
     <>
-      <section id="galerie" className="py-20 px-4 bg-white">
-        <div className="container mx-auto">
-          <div className="mb-8">
-            <h2 className="font-sans text-3xl text-center text-stone-800 uppercase tracking-wider mb-1">Galerie</h2>
-            {role === 'admin' && media.length > 0 && (
-              <div className="flex flex-col items-center gap-2">
-                <button
-                  onClick={downloadAllMedia}
-                  disabled={downloading}
-                  className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50"
-                  title={downloading ? 'Téléchargement en cours...' : 'Télécharger toute la galerie'}
-                >
-                  <Download className="w-6 h-6 text-stone-300" />
-                </button>
-                {downloading && (
-                  <div className="w-48">
-                    <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-stone-400 transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
-                    </div>
-                    <p className="text-xs text-stone-400 text-center mt-1">{Math.round(downloadProgress)}%</p>
-                  </div>
-                )}
+      <section id="galerie" className="py-12 px-5 scroll-mt-28">
+
+        {/* Titre section */}
+        <div className="text-center mb-8 flex flex-col items-center">
+          <span className={tokens.section.eyebrow}>Nos plus beaux souvenirs</span>
+          <div className="flex items-center gap-4 mt-2">
+            <div className={tokens.section.divider} />
+            <h2 className={tokens.section.title}>Galerie digitale</h2>
+            <div className={tokens.section.divider} />
+          </div>
+        </div>
+
+        {/* Bouton télécharger tout — admin */}
+        {role === 'admin' && media.length > 0 && (
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <button
+              onClick={downloadAllMedia}
+              disabled={downloading}
+              className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50"
+              title={downloading ? 'Téléchargement en cours...' : 'Télécharger toute la galerie'}
+            >
+              <Download className="w-6 h-6 text-stone-300" />
+            </button>
+            {downloading && (
+              <div className="w-48">
+                <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-stone-400 transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
+                </div>
+                <p className="text-xs text-stone-400 text-center mt-1">{Math.round(downloadProgress)}%</p>
               </div>
             )}
           </div>
+        )}
 
-          {media.length === 0 ? (
-            <p className="text-center text-stone-500">Aucune photo ou vidéo disponible</p>
-          ) : (
-            <div className="columns-2 md:columns-4 gap-4 space-y-4">
-              {media.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="break-inside-avoid group relative cursor-pointer"
-                  onClick={() => setLightboxIndex(index)}
-                >
-                  {role === 'admin' && (
-                    <button
-                      onClick={e => { e.stopPropagation(); hideMedia(item) }}
-                      className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
-                    >
-                      <EyeOff className="w-4 h-4 text-white" />
-                    </button>
-                  )}
+        {media.length === 0 ? (
+          <p className={cn(tokens.text.body, 'text-center')}>Aucune photo ou vidéo disponible</p>
+        ) : (
+          <div className="columns-2 gap-3 space-y-3">
+            {media.map((item, index) => (
+              <div
+                key={item.id}
+                className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
+                onClick={() => setLightboxIndex(index)}
+              >
+                {role === 'admin' && (
+                  <button
+                    onClick={e => { e.stopPropagation(); hideMedia(item) }}
+                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                  >
+                    <EyeOff className="w-4 h-4 text-white" />
+                  </button>
+                )}
+                {item.type === 'image' ? (
+                  <img src={item.url} alt="" className="w-full hover:scale-105 transition-transform duration-700" />
+                ) : (
+                  <video src={item.url} className="w-full" controls />
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Galerie masquée — admin */}
+        {role === 'admin' && hiddenMedia.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-stone-100">
+            <div className="text-center mb-8 flex flex-col items-center">
+              <span className={tokens.section.eyebrow}>Contenu masqué</span>
+              <div className="flex items-center gap-4 mt-2">
+                <div className={tokens.section.divider} />
+                <h2 className={tokens.section.title}>Galerie masquée</h2>
+                <div className={tokens.section.divider} />
+              </div>
+            </div>
+            <div className="columns-2 gap-3 space-y-3">
+              {hiddenMedia.map(item => (
+                <div key={item.id} className="break-inside-avoid rounded-[6px] overflow-hidden group relative bg-stone-100">
+                  <button
+                    onClick={() => unhideMedia(item)}
+                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
+                  >
+                    <Eye className="w-4 h-4 text-white" />
+                  </button>
                   {item.type === 'image' ? (
-                    <img src={item.url} alt="" className="w-full shadow-md hover:shadow-xl transition-shadow" />
+                    <img src={item.url} alt="" className="w-full" />
                   ) : (
-                    <video src={item.url} className="w-full shadow-md hover:shadow-xl transition-shadow" controls />
+                    <video src={item.url} className="w-full" controls />
                   )}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
                 </div>
               ))}
             </div>
-          )}
-
-          {role === 'admin' && hiddenMedia.length > 0 && (
-            <div className="mt-16 pt-10 border-t border-stone-200">
-              <h3 className="font-sans text-xl text-center text-stone-500 uppercase tracking-wider mb-8">Galerie masquée</h3>
-              <div className="columns-2 md:columns-4 gap-4 space-y-4">
-                {hiddenMedia.map(item => (
-                  <div key={item.id} className="break-inside-avoid group relative">
-                    <button
-                      onClick={() => unhideMedia(item)}
-                      className="absolute top-2 right-2 bg-black/60 p-2 rounded-full opacity-0 group-hover:opacity-100 transition z-10"
-                    >
-                      <Eye className="w-4 h-4 text-white" />
-                    </button>
-                    {item.type === 'image' ? (
-                      <img src={item.url} alt="" className="w-full shadow-md" />
-                    ) : (
-                      <video src={item.url} className="w-full shadow-md" controls />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
 
+      {/* Lightbox */}
       {lightboxIndex !== null && (
         <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4">
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors">

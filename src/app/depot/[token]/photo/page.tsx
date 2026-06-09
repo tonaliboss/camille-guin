@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
 import { isValidToken } from '@/lib/tokens'
+import { getRole } from '@/lib/auth'
 import PhotoUpload from '@/components/depot/PhotoUpload'
+import AppLayout from '@/components/ui/AppLayout'
 
 interface Props {
   params: Promise<{ token: string }>
@@ -9,5 +11,11 @@ interface Props {
 export default async function PhotoPage({ params }: Props) {
   const { token } = await params
   if (!isValidToken('depot', token)) notFound()
-  return <PhotoUpload />
+  const role = await getRole()
+
+  return (
+    <AppLayout role={role} token={token}>
+      <PhotoUpload />
+    </AppLayout>
+  )
 }

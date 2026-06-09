@@ -1,32 +1,19 @@
 'use client'
 
-import type { UserRole } from '@/types'
-import AdminHeader from '@/components/ui/AdminHeader'
-import Hero from '@/components/galerie/Hero'
-import Navigation from '@/components/galerie/Navigation'
-import GalerieSection from '@/components/galerie/GalerieSection'
-import LivreOrSection from '@/components/galerie/LivreOrSection'
-import VoeuxAudioSection from '@/components/galerie/VoeuxAudioSection'
+import type { UserRole, DepotSettings } from '@/types'
+import AppLayout from '@/components/ui/AppLayout'
+import HomeGalerie from '@/components/galerie/HomeGalerie'
 
 interface Props {
   role: UserRole
   token: string
+  settings: DepotSettings
 }
 
-export default function GalerieClient({ role, token }: Props) {
+export default function GalerieClient({ role, token, settings }: Props) {
   return (
-    <div className="min-h-screen bg-white relative">
-      <AdminHeader role={role} token={token} context="galerie" />
-      <Hero />
-      <Navigation />
-      <GalerieSection role={role} />
-      <LivreOrSection role={role} />
-      <VoeuxAudioSection role={role} />
-      <footer className="py-8" style={{ backgroundColor: '#4e5941' }}>
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-white">Galerie créée par CAMORIA MEMORIES</p>
-        </div>
-      </footer>
-    </div>
+    <AppLayout role={role} token={token}>
+      <HomeGalerie role={role} token={token} settings={settings} />
+    </AppLayout>
   )
 }
