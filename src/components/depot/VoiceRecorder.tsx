@@ -8,6 +8,7 @@ import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
+import HiddenToggle from '@/components/ui/HiddenToggle'
 
 export default function VoiceRecorder() {
   const router = useRouter()
@@ -19,6 +20,8 @@ export default function VoiceRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<BlobPart[]>([])
   const timerRef = useRef<number | null>(null)
+  const [author, setAuthor] = useState('')
+  const [hidden, setHidden] = useState(false)
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
@@ -59,7 +62,13 @@ export default function VoiceRecorder() {
       const res = await fetch('/api/media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bucket_path: bucketPath, type: 'audio', folder: FOLDERS.AUDIO }),
+        body: JSON.stringify({ 
+          bucket_path: bucketPath, 
+          type: 'audio', 
+          folder: FOLDERS.AUDIO,
+          hidden,
+          metadata: { author: author.trim() || null }
+        }),
       })
       if (!res.ok) throw new Error('Erreur BDD')
       toast.success('Message vocal envoyé !')
@@ -105,6 +114,14 @@ export default function VoiceRecorder() {
             ) : audioBlob ? (
               <div className="flex flex-col items-center space-y-4 w-full">
                 <audio src={URL.createObjectURL(audioBlob)} controls className="w-full" />
+                <input
+                  type="text"
+                  value={author}
+                  onChange={e => setAuthor(e.target.value)}
+                  className={tokens.input.base}
+                  placeholder="De la part de... (facultatif)"
+                />
+                <HiddenToggle hidden={hidden} onChange={setHidden} />
                 <div className="flex gap-3 w-full">
                   <button
                     onClick={() => { setAudioBlob(null); setRecordingTime(0) }}

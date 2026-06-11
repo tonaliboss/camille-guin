@@ -16,6 +16,7 @@ export interface AudioMessage {
   id: string
   name: string
   url: string
+  metadata?: { author?: string | null }
 }
 
 export interface Message {

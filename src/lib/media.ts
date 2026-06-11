@@ -39,6 +39,7 @@ export async function getAudioMessages(hidden: boolean = false): Promise<AudioMe
     id: item.id,
     name: item.bucket_path.split('/').pop() || item.bucket_path,
     url: getPublicUrl(item.bucket_path),
+    metadata: item.metadata,
   }))
 }
 
@@ -69,12 +70,13 @@ export async function toggleMediaVisibility(id: string, hidden: boolean): Promis
   if (!res.ok) throw new Error('Erreur lors de la mise à jour')
 }
 
-export async function saveMessage(message: string, author: string): Promise<void> {
+export async function saveMessage(message: string, author: string, hidden: boolean = false): Promise<void> {
   const res = await fetch('/api/media', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       type: 'message',
+      hidden,
       metadata: { message, author, date: new Date().toISOString() },
     }),
   })

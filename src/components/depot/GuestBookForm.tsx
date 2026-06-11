@@ -8,6 +8,7 @@ import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { saveMessage } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
+import HiddenToggle from '@/components/ui/HiddenToggle'
 
 export default function GuestbookForm() {
   const router = useRouter()
@@ -15,6 +16,7 @@ export default function GuestbookForm() {
   const [message, setMessage] = useState('')
   const [author, setAuthor] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const [hidden, setHidden] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +27,7 @@ export default function GuestbookForm() {
     executeIfNotPreview(async () => {
       setIsSending(true)
       try {
-        await saveMessage(message.trim(), author.trim())
+        await saveMessage(message.trim(), author.trim(), hidden)
         toast.success('Votre message a été enregistré !')
         router.back()
       } catch {
@@ -77,6 +79,7 @@ export default function GuestbookForm() {
                 placeholder="Votre nom"
               />
             </div>
+            <HiddenToggle hidden={hidden} onChange={setHidden} />
             <button
               type="submit"
               disabled={isSending}

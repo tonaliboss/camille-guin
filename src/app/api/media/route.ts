@@ -18,17 +18,17 @@ export async function POST(request: NextRequest) {
         bucket_path: `ecrit/message-${Date.now()}`,
         type: 'message',
         folder: 'ecrit',
-        hidden: false,
+        hidden: body.hidden ?? false,
         metadata: body.metadata,
       })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })
   }
 
-  const { bucket_path, type, folder } = body
+  const { bucket_path, type, folder, metadata, hidden } = body
   const { error } = await supabaseAdmin
     .from('media_items')
-    .insert({ bucket_path, type, folder, hidden: false })
+    .insert({ bucket_path, type, folder, hidden: hidden ?? false, metadata: metadata ?? null  })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })

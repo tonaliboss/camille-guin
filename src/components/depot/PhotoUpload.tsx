@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Upload, Image as ImageIcon, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import { useFileUpload } from '@/hooks/useFileUpload'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { FOLDERS } from '@/lib/supabase'
@@ -10,17 +11,17 @@ import { formatFileSize } from '@/lib/fileOptimization'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import FileUploadProgress from '@/components/ui/FileUploadProgress'
+import HiddenToggle from '@/components/ui/HiddenToggle'
 
 export default function PhotoUpload() {
   const router = useRouter()
   const { isPreview, executeIfNotPreview } = usePreviewMode()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  const { uploadFiles, uploadProgress, isUploading, resetProgress } = useFileUpload(FOLDERS.GALERIE)
+  const [hidden, setHidden] = useState(false)
+  const { uploadFiles, uploadProgress, isUploading, resetProgress } = useFileUpload(FOLDERS.GALERIE, hidden)
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -42,7 +43,6 @@ export default function PhotoUpload() {
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError('')
-    setSuccessMessage('')
     if (!e.target.files) return
     const selected = Array.from(e.target.files)
     const valid = selected.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'))
@@ -56,13 +56,11 @@ export default function PhotoUpload() {
   const handleUpload = () => executeIfNotPreview(async () => {
     if (!files.length) return
     setError('')
-    setSuccessMessage('')
     resetProgress()
     const { success, failed } = await uploadFiles(files)
     if (success > 0) {
-      setSuccessMessage(`${success} fichier(s) envoyé(s) avec succès !${failed > 0 ? ` (${failed} échec(s))` : ''}`)
-      setFiles([])
-      if (failed === 0) setTimeout(() => router.back(), 3000)
+      toast.success(`${success} fichier(s) envoyé(s) avec succès !${failed > 0 ? ` (${failed} échec(s))` : ''}`)
+      router.back()
     } else {
       setError("Aucun fichier n'a pu être envoyé")
     }
@@ -82,16 +80,6 @@ export default function PhotoUpload() {
           <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl">
             <AlertCircle size={18} className="text-red-400 flex-shrink-0 mt-0.5" />
             <p className={cn(tokens.text.body, 'text-red-600')}>{error}</p>
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-100 rounded-2xl">
-            <CheckCircle size={18} className="text-green-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className={cn(tokens.text.body, 'text-green-600')}>{successMessage}</p>
-              <p className="text-[11px] text-green-500 mt-1">Redirection automatique dans 3 secondes...</p>
-            </div>
           </div>
         )}
 
@@ -132,6 +120,7 @@ export default function PhotoUpload() {
 
         {files.length > 0 && (
           <div className="space-y-3">
+            <HiddenToggle hidden={hidden} onChange={setHidden} />
             <button
               onClick={handleUpload}
               disabled={isUploading || isPreview}

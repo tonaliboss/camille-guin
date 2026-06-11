@@ -65,7 +65,7 @@ function AudioRow({ audio, index, hidden, role, player, audioRef, onTogglePlay, 
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-baseline mb-3">
           <span className="italic text-[18px] text-black truncate">
-            Vœux audio {index + 1}
+            {audio.metadata?.author ?? `Vœux audio ${index + 1}`}
           </span>
           <span className="text-[10px] font-medium tracking-widest text-stone-400 ml-2 shrink-0">
             {formatTime(player.duration)}

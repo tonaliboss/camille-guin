@@ -11,7 +11,7 @@ export interface UploadProgress {
   error?: string
 }
 
-export const useFileUpload = (folderName: string) => {
+export const useFileUpload = (folderName: string, hidden: boolean = false) => {
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: UploadProgress }>({})
   const [isUploading, setIsUploading] = useState(false)
 
@@ -55,7 +55,7 @@ export const useFileUpload = (folderName: string) => {
       const res = await fetch('/api/media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bucket_path: bucketPath, type, folder: folderName }),
+        body: JSON.stringify({ bucket_path: bucketPath, type, folder: folderName, hidden }),
       })
 
       if (!res.ok) throw new Error('Erreur lors de l\'enregistrement en BDD')
@@ -70,7 +70,7 @@ export const useFileUpload = (folderName: string) => {
       })
       return false
     }
-  }, [folderName, updateProgress])
+  }, [folderName, updateProgress, hidden])
 
   const uploadFiles = useCallback(async (files: File[]): Promise<{ success: number; failed: number }> => {
     if (!files.length) return { success: 0, failed: 0 }
@@ -90,7 +90,7 @@ export const useFileUpload = (folderName: string) => {
 
     setIsUploading(false)
     return { success: successCount, failed: failedCount }
-  }, [uploadFile])
+  }, [uploadFile, hidden])
 
   const resetProgress = useCallback(() => setUploadProgress({}), [])
 
