@@ -6,7 +6,6 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 // 24h
 
 export async function POST(request: NextRequest) {
   const { code } = await request.json()
-
   if (code !== process.env.ADMIN_CODE) {
     return NextResponse.json(
       { error: 'Code incorrect' },
@@ -15,7 +14,6 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ success: true })
-
   response.cookies.set(COOKIE_NAME, 'true', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

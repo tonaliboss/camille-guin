@@ -40,7 +40,6 @@ export async function PATCH(request: NextRequest) {
   }
 
   const { id, hidden } = await request.json()
-
   const { error } = await supabaseAdmin
     .from('media_items')
     .update({ hidden })

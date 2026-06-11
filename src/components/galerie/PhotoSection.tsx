@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { Download, X, EyeOff, Eye } from 'lucide-react'
-import JSZip from 'jszip'
-import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
 import type { MediaItem, UserRole } from '@/types'
+import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
+import { downloadAllAsZip, downloadFile } from '@/lib/download'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 
@@ -12,7 +12,7 @@ interface Props {
   role: UserRole
 }
 
-export default function GalerieSection({ role }: Props) {
+export default function PhotoSection({ role }: Props) {
   const [media, setMedia] = useState<MediaItem[]>([])
   const [hiddenMedia, setHiddenMedia] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,44 +47,12 @@ export default function GalerieSection({ role }: Props) {
     loadMedia()
   }
 
-  const downloadMedia = async (item: MediaItem) => {
-    const response = await fetch(item.url)
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = item.name
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    window.URL.revokeObjectURL(url)
-  }
-
   const downloadAllMedia = async () => {
     if (!media.length || downloading) return
     setDownloading(true)
     setDownloadProgress(0)
     try {
-      const zip = new JSZip()
-      const folder = zip.folder('galerie')
-      for (let i = 0; i < media.length; i++) {
-        const response = await fetch(media[i].url)
-        const blob = await response.blob()
-        folder?.file(media[i].name, blob)
-        setDownloadProgress(((i + 1) / media.length) * 90)
-        await new Promise(r => setTimeout(r, 10))
-      }
-      setDownloadProgress(95)
-      const content = await zip.generateAsync({ type: 'blob' })
-      setDownloadProgress(100)
-      const url = window.URL.createObjectURL(content)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'galerie.zip'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
+      await downloadAllAsZip(media, 'galerie', 'galerie.zip', setDownloadProgress)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
@@ -100,8 +68,6 @@ export default function GalerieSection({ role }: Props) {
   return (
     <>
       <section id="galerie" className="py-12 px-5 scroll-mt-28">
-
-        {/* Titre section */}
         <div className="text-center mb-8 flex flex-col items-center">
           <span className={tokens.section.eyebrow}>Nos plus beaux souvenirs</span>
           <div className="flex items-center gap-4 mt-2">
@@ -114,7 +80,6 @@ export default function GalerieSection({ role }: Props) {
           )}
         </div>
 
-        {/* Bouton télécharger tout — admin */}
         {role === 'admin' && media.length > 0 && (
           <div className="flex flex-col items-center gap-2 mb-6">
             <button
@@ -173,7 +138,6 @@ export default function GalerieSection({ role }: Props) {
           </button>
         )}
 
-        {/* Galerie masquée — admin */}
         {role === 'admin' && hiddenMedia.length > 0 && (
           <div className="mt-12 pt-8 border-t border-stone-100">
             <div className="text-center mb-8 flex flex-col items-center">
@@ -216,13 +180,12 @@ export default function GalerieSection({ role }: Props) {
         )}
       </section>
 
-      {/* Lightbox */}
       {lightboxIndex !== null && (
         <div className="fixed inset-0 z-[100] bg-black/5 backdrop-blur-sm flex items-center justify-center p-4">
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors">
             <X className="w-8 h-8" />
           </button>
-          <button onClick={() => downloadMedia(media[lightboxIndex])} className="absolute top-4 left-4 text-white hover:text-stone-300 transition-colors">
+          <button onClick={() => downloadFile(media[lightboxIndex].url, media[lightboxIndex].name)} className="absolute top-4 left-4 text-white hover:text-stone-300 transition-colors">
             <Download className="w-6 h-6" />
           </button>
           {media[lightboxIndex].type === 'image' ? (

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getRole } from '@/lib/auth'
-import AdminLoginForm from '@/components/ui/AdminLoginForm'
+import Connexion from '@/components/connexion/Connexion'
 
 interface Props {
   searchParams: Promise<{ from?: string }>
@@ -11,5 +11,5 @@ export default async function ConnexionPage({ searchParams }: Props) {
   if (role === 'admin') redirect('/tableau-de-bord')
 
   const { from } = await searchParams
-  return <AdminLoginForm from={from} />
+  return <Connexion from={from} />
 }

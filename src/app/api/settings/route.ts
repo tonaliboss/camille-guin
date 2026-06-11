@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getSettings, updateSettings } from '@/lib/settings'
 import { cookies } from 'next/headers'
+import { getSettings, updateSettings } from '@/lib/settings'
 
 async function isAdmin() {
   const cookieStore = await cookies()

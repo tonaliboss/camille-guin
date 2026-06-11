@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   if (!rating || rating < 1 || rating > 5) {
     return NextResponse.json({ error: 'Note invalide' }, { status: 400 })
   }
+
   const { error } = await supabaseAdmin
     .from('reviews')
     .insert({ rating, comment: comment || null, author: author || null })

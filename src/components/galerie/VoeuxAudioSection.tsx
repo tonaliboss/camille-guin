@@ -2,11 +2,15 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Download, EyeOff, Eye, Play, Pause } from 'lucide-react'
-import JSZip from 'jszip'
 import { getAudioMessages, toggleMediaVisibility } from '@/lib/media'
+import { downloadAllAsZip, downloadFile } from '@/lib/download'
 import type { AudioMessage, UserRole } from '@/types'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
+
+interface Props {
+  role: UserRole
+}
 
 interface AudioPlayerState {
   isPlaying: boolean
@@ -103,10 +107,6 @@ function AudioRow({ audio, index, hidden, role, player, audioRef, onTogglePlay, 
   )
 }
 
-interface Props {
-  role: UserRole
-}
-
 export default function VoeuxAudioSection({ role }: Props) {
   const [audioMessages, setAudioMessages] = useState<AudioMessage[]>([])
   const [hiddenAudio, setHiddenAudio] = useState<AudioMessage[]>([])
@@ -180,17 +180,8 @@ export default function VoeuxAudioSection({ role }: Props) {
     loadAudio()
   }, [loadAudio])
 
-  const downloadAudio = useCallback(async (audio: AudioMessage) => {
-    const response = await fetch(audio.url)
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = audio.name
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    window.URL.revokeObjectURL(url)
+  const downloadAudio = useCallback((audio: AudioMessage) => {
+    downloadFile(audio.url, audio.name)
   }, [])
 
   const downloadAllAudio = async () => {
@@ -198,26 +189,7 @@ export default function VoeuxAudioSection({ role }: Props) {
     setDownloading(true)
     setDownloadProgress(0)
     try {
-      const zip = new JSZip()
-      const folder = zip.folder('messages-audio')
-      for (let i = 0; i < audioMessages.length; i++) {
-        const response = await fetch(audioMessages[i].url)
-        const blob = await response.blob()
-        folder?.file(audioMessages[i].name, blob)
-        setDownloadProgress(((i + 1) / audioMessages.length) * 90)
-        await new Promise(r => setTimeout(r, 10))
-      }
-      setDownloadProgress(95)
-      const content = await zip.generateAsync({ type: 'blob' })
-      setDownloadProgress(100)
-      const url = window.URL.createObjectURL(content)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'messages-audio.zip'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
+      await downloadAllAsZip(audioMessages, 'audio', 'audio.zip', setDownloadProgress)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)

@@ -5,13 +5,12 @@ import { useRouter } from 'next/navigation'
 import { Lock, ArrowLeft } from 'lucide-react'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
-import { toast } from 'sonner'
 
 interface Props {
   from?: string
 }
 
-export default function AdminLoginForm({ from }: Props) {
+export default function Connexion({ from }: Props) {
   const router = useRouter()
   const [code, setCode] = useState('')
   const [error, setError] = useState(false)

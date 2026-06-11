@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from '@/components/shadcn/sonner'
 import { Lora, Playfair_Display, Cormorant_Garamond, Great_Vibes, Montserrat, EB_Garamond } from 'next/font/google'
@@ -11,7 +10,7 @@ const greatVibes = Great_Vibes({ subsets: ['latin'], weight: '400', variable: '-
 const montserrat = Montserrat({ subsets: ['latin'], variable: '--font-montserrat' })
 const ebGaramond = EB_Garamond({ subsets: ['latin'], variable: '--font-eb-garamond' })
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${lora.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} ${ebGaramond.variable}`}>
       <body>
@@ -21,16 +20,6 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",

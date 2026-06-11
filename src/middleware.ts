@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/depot/')) {
     const token = pathname.split('/')[2]
     if (!token || !isValidToken('depot', token)) {
-      return NextResponse.notFound()
+      return new NextResponse(null, { status: 404 })
     }
   }
 
@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/galerie/')) {
     const token = pathname.split('/')[2]
     if (!token || !isValidToken('galerie', token)) {
-      return NextResponse.notFound()
+      return new NextResponse(null, { status: 404 })
     }
   }
 

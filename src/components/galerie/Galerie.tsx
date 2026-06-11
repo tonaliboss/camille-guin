@@ -1,15 +1,9 @@
 'use client'
 
-import { User, ChevronDown } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { usePreviewMode } from '@/hooks/usePreviewMode'
-import { tokens } from '@/lib/design-tokens'
-import { cn } from '@/components/shadcn/utils'
 import { motion } from 'motion/react'
-import banniereBg from '@/assets/images/banniere.png'
-import logoBolt from '@/assets/images/logobolt.png'
+import { tokens } from '@/lib/design-tokens'
 import type { UserRole, DepotSettings } from '@/types'
-import GalerieSection from '@/components/galerie/GalerieSection'
+import PhotoSection from '@/components/galerie/PhotoSection'
 import LivreOrSection from '@/components/galerie/LivreOrSection'
 import VoeuxAudioSection from '@/components/galerie/VoeuxAudioSection'
 import Navigation from '@/components/galerie/Navigation'
@@ -22,20 +16,7 @@ interface Props {
   settings: DepotSettings
 }
 
-export default function HomeGalerie({ role, token, settings }: Props) {
-  const router = useRouter()
-  const { isPreview } = usePreviewMode()
-
-  const bannerStyle = settings.bannerType === 'solid'
-    ? { backgroundColor: settings.bannerColor }
-    : undefined
-
-  const bannerSrc = settings.bannerType === 'custom' && settings.bannerImageUrl
-    ? settings.bannerImageUrl
-    : settings.bannerType === 'image'
-    ? banniereBg.src
-    : null
-
+export default function Galerie({ role, token, settings }: Props) {
   return (
     <div>
       <HeroBanner role={role} settings={settings} connexionPath={`/connexion?from=/galerie/${token}`}>
@@ -65,7 +46,7 @@ export default function HomeGalerie({ role, token, settings }: Props) {
 
       <Navigation />
 
-      <GalerieSection role={role} />
+      <PhotoSection role={role} />
       <LivreOrSection role={role} />
       <VoeuxAudioSection role={role} />
 

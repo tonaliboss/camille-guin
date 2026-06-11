@@ -1,17 +1,15 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Upload, Image as ImageIcon, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useFileUpload } from '@/hooks/useFileUpload'
-import FileUploadProgress from '@/components/ui/FileUploadProgress'
+import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { FOLDERS } from '@/lib/supabase'
-import { formatFileSize } from '@/utils/fileOptimization'
+import { formatFileSize } from '@/lib/fileOptimization'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
-import { usePreviewMode } from '@/hooks/usePreviewMode'
-import { toast } from 'sonner'
-import { useRef } from 'react'
+import FileUploadProgress from '@/components/ui/FileUploadProgress'
 
 export default function PhotoUpload() {
   const router = useRouter()

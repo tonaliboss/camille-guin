@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight, Download, EyeOff, Eye } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import jsPDF from 'jspdf'
-import { getMessages, toggleMediaVisibility } from '@/lib/media'
 import type { Message, Page, UserRole } from '@/types'
+import { getMessages, toggleMediaVisibility } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 
@@ -104,8 +104,6 @@ export default function LivreOrSection({ role }: Props) {
     if (distance > 50 && currentPage < allPages.length - 1) handlePageChange(currentPage + 1)
     if (distance < -50 && currentPage > 0) handlePageChange(currentPage - 1)
   }
-
-  // ── PDF (logique inchangée) ──────────────────────────────────────────────
 
   const createTextCanvas = (text: string, fontFamily: string, fontSize: number, maxWidth: number, textColor: string): HTMLCanvasElement => {
     const canvas = document.createElement('canvas')
@@ -224,8 +222,6 @@ export default function LivreOrSection({ role }: Props) {
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
   if (loading) return (
     <section id="livre-or" className="py-12 px-5">
       <p className={cn(tokens.text.body, 'text-center')}>Chargement...</p>
@@ -236,7 +232,6 @@ export default function LivreOrSection({ role }: Props) {
 
   return (
     <section id="livre-or" className="py-12 px-5 scroll-mt-28">
-
       <div className="text-center mb-8 flex flex-col items-center">
         <span className={tokens.section.eyebrow}>Les mots qui réchauffent le cœur</span>
         <div className="flex items-center gap-4 mt-2">

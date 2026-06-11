@@ -1,22 +1,17 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { Camera, PenLine, Mic, UtensilsCrossed, Heart, User, FileText } from 'lucide-react'
-import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
-import logoBolt from '@/assets/images/logobolt.png'
-import banniereBg from '@/assets/images/banniere.png'
 import { useState, useEffect } from 'react'
-import type { DepotSettings } from '@/types'
-import { usePreviewMode } from '@/hooks/usePreviewMode';
-import { toast } from 'sonner'
-import { tokens } from '@/lib/design-tokens';
-import type { UserRole } from '@/types';
+import { useRouter } from 'next/navigation'
+import { Camera, PenLine, Mic, UtensilsCrossed, FileText, Calendar } from 'lucide-react'
 import { motion } from 'motion/react';
-import { cn } from '@/components/shadcn/utils';
-import CamoriaFooter from '@/components/ui/CamoriaFooter'
+import type { DepotSettings, UserRole } from '@/types'
+import { usePreviewMode } from '@/hooks/usePreviewMode';
 import { WEDDING_DATE, formatDate } from '@/lib/dates'
-import { Calendar } from 'lucide-react'
+import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
+import { tokens } from '@/lib/design-tokens';
+import { cn } from '@/components/shadcn/utils';
 import HeroBanner from '@/components/ui/HeroBanner'
+import CamoriaFooter from '@/components/ui/CamoriaFooter'
 
 interface Props {
   token: string
@@ -24,7 +19,7 @@ interface Props {
   role: UserRole
 }
 
-function HomeDepot({ token, settings, role }: Props) {
+export default function Depot({ token, settings, role }: Props) {
   const router = useRouter()
   const [menuUrl, setMenuUrl] = useState<string | null>(null)
   const { isPreview } = usePreviewMode()
@@ -51,17 +46,6 @@ function HomeDepot({ token, settings, role }: Props) {
     }
     fetchMenu()
   }, [])
-
-  // Bannière selon le type choisi
-  const bannerStyle = settings.bannerType === 'solid'
-    ? { backgroundColor: settings.bannerColor }
-    : undefined
-
-  const bannerSrc = settings.bannerType === 'custom' && settings.bannerImageUrl
-    ? settings.bannerImageUrl
-    : settings.bannerType === 'image'
-    ? banniereBg.src
-    : null
 
   return (
     <div>
@@ -110,7 +94,6 @@ function HomeDepot({ token, settings, role }: Props) {
       </motion.div>
 
       <main className="px-5 mt-4 space-y-4">
-        {/* Photos & vidéos — full width */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,7 +114,6 @@ function HomeDepot({ token, settings, role }: Props) {
           </button>
         </motion.div>
 
-        {/* Livre d'or + Message vocal — 2 colonnes */}
         <div className="grid grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -216,5 +198,3 @@ function HomeDepot({ token, settings, role }: Props) {
     </div>
   )
 }
-
-export default HomeDepot

@@ -2,11 +2,11 @@
 
 import { User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import banniereBg from '@/assets/images/banniere.png'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
+import type { UserRole, DepotSettings } from '@/types'
 import { tokens } from '@/lib/design-tokens'
 import LogoPill from '@/components/ui/LogoPill'
-import banniereBg from '@/assets/images/banniere.png'
-import type { UserRole, DepotSettings } from '@/types'
 
 interface Props {
   role: UserRole
