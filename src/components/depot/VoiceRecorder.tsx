@@ -4,18 +4,15 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mic, Square, ArrowLeft, Send } from 'lucide-react'
 import { toast } from 'sonner'
-import type { DepotSettings } from '@/types'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import HiddenToggle from '@/components/ui/HiddenToggle'
+import { useSettings } from '@/components/providers/SettingsProvider'
 
-interface Props {
-  settings: DepotSettings
-}
-
-export default function VoiceRecorder({ settings }: Props) {
+export default function VoiceRecorder() {
+  const settings = useSettings()
   const router = useRouter()
   const { executeIfNotPreview } = usePreviewMode()
   const [isRecording, setIsRecording] = useState(false)
@@ -38,7 +35,10 @@ export default function VoiceRecorder({ settings }: Props) {
       chunksRef.current = []
       mediaRecorder.ondataavailable = e => chunksRef.current.push(e.data)
       mediaRecorder.onstop = () => {
-        setAudioBlob(new Blob(chunksRef.current, { type: 'audio/webm' }))
+        const mimeType = mediaRecorder.mimeType || 'audio/webm'
+        const size = chunksRef.current.reduce((a, b) => a + b.size, 0)
+        alert('mimeType: ' + mimeType + ' / size: ' + size)
+        setAudioBlob(new Blob(chunksRef.current, { type: mimeType }))
         stream.getTracks().forEach(t => t.stop())
       }
       mediaRecorder.start()

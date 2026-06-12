@@ -5,17 +5,14 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
-import type { DepotSettings } from '@/types'
 import { saveMessage } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import HiddenToggle from '@/components/ui/HiddenToggle'
+import { useSettings } from '@/components/providers/SettingsProvider'
 
-interface Props {
-  settings: DepotSettings
-}
-
-export default function GuestbookForm({ settings }: Props) {
+export default function GuestbookForm() {
+  const settings = useSettings()
   const router = useRouter()
   const { executeIfNotPreview } = usePreviewMode()
   const [message, setMessage] = useState('')

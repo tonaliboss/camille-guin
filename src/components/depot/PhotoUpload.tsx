@@ -4,7 +4,6 @@ import React, { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Upload, Image as ImageIcon, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import type { DepotSettings } from '@/types'
 import { useFileUpload } from '@/hooks/useFileUpload'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { FOLDERS } from '@/lib/supabase'
@@ -13,12 +12,10 @@ import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import FileUploadProgress from '@/components/ui/FileUploadProgress'
 import HiddenToggle from '@/components/ui/HiddenToggle'
+import { useSettings } from '@/components/providers/SettingsProvider'
 
-interface Props {
-  settings: DepotSettings
-}
-
-export default function PhotoUpload({ settings }: Props) {
+export default function PhotoUpload() {
+  const settings = useSettings()
   const router = useRouter()
   const { isPreview, executeIfNotPreview } = usePreviewMode()
   const inputRef = useRef<HTMLInputElement>(null)

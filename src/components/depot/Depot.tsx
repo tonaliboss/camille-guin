@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, PenLine, Mic, UtensilsCrossed, FileText, Calendar } from 'lucide-react'
 import { motion } from 'motion/react';
-import type { DepotSettings, UserRole } from '@/types'
 import { usePreviewMode } from '@/hooks/usePreviewMode';
 import { WEDDING_DATE, formatDate } from '@/lib/dates'
 import { hasFeature } from '@/lib/plan'
@@ -13,14 +12,16 @@ import { tokens } from '@/lib/design-tokens';
 import { cn } from '@/components/shadcn/utils';
 import HeroBanner from '@/components/ui/HeroBanner'
 import CamoriaFooter from '@/components/ui/CamoriaFooter'
+import { useSettings, useRole } from '@/components/providers/SettingsProvider'
+
 
 interface Props {
   token: string
-  settings: DepotSettings
-  role: UserRole
 }
 
-export default function Depot({ token, settings, role }: Props) {
+export default function Depot({ token }: Props) {
+  const settings = useSettings()
+  const role = useRole()
   const router = useRouter()
   const [menuUrl, setMenuUrl] = useState<string | null>(null)
   const { isPreview } = usePreviewMode()
