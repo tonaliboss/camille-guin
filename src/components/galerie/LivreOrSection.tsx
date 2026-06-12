@@ -156,10 +156,10 @@ export default function LivreOrSection({ role, settings }: Props) {
       const opacity = 0.12 - (j / shadowWidth) * 0.12
       pdf.setDrawColor(0, 0, 0)
       pdf.setLineWidth(0.8)
-      pdf.setGState(new (pdf as any).GState({ opacity }))
+      ;(pdf as any).setGState(new (pdf as any).GState({ opacity }))
       pdf.line(margin + j, margin, margin + j, pageHeight - margin)
     }
-    pdf.setGState(new (pdf as any).GState({ opacity: 1 }))
+    ;(pdf as any).setGState(new (pdf as any).GState({ opacity: 1 }))
     pdf.setDrawColor(150, 150, 150)
     pdf.setLineWidth(0.3)
     pdf.line(margin, margin, margin, pageHeight - margin)
