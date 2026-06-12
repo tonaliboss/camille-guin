@@ -126,6 +126,7 @@ export default function CamoriaFooter({ settings }: Props) {
                   onClick={handleSubmit}
                   disabled={submitting || !rating}
                   className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+                  style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
                 >
                   {submitting ? 'Envoi...' : 'Envoyer mon avis'}
                 </button>

@@ -197,7 +197,22 @@ export default function LivreOrSection({ role, settings }: Props) {
     return pages
   }
 
-  const downloadCurrentPageAsPDF = () => {
+  const savePDF = async (pdf: jsPDF, filename: string) => {
+    const pdfBlob = pdf.output('blob')
+    const file = new File([pdfBlob], filename, { type: 'application/pdf' })
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: filename })
+        return
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return
+      }
+    }
+    pdf.save(filename)
+  }
+
+  const downloadCurrentPageAsPDF = async () => {
     if (!allPages.length) return
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const p = allPages[safePage]
@@ -206,7 +221,7 @@ export default function LivreOrSection({ role, settings }: Props) {
       if (i > 0) pdf.addPage()
       addPDFPage(pdf, part, i === parts.length - 1 ? p.originalMessage.author : '', i + 1, p.originalIndex)
     })
-    pdf.save(`message-${p.originalIndex + 1}.pdf`)
+    await savePDF(pdf, `message-${p.originalIndex + 1}.pdf`)
   }
   
   const downloadMessagesAsPDF = async (msgs: (Message & { _id: string })[], filename: string) => {
@@ -222,7 +237,6 @@ export default function LivreOrSection({ role, settings }: Props) {
           pdfPages.push({ message: part, author: partIndex === parts.length - 1 ? msg.author : '', pageNumber: pdfPages.length + 1, messageIndex: msgIndex })
         })
       })
-      console.log('pdfPages', pdfPages.length, pdfPages.map(p => p.message.length))
       for (let i = 0; i < pdfPages.length; i++) {
         if (i > 0) pdf.addPage()
         const p = pdfPages[i]
@@ -231,21 +245,21 @@ export default function LivreOrSection({ role, settings }: Props) {
         await new Promise(r => setTimeout(r, 10))
       }
       setDownloadProgress(100)
-      pdf.save(filename)
+      await savePDF(pdf, filename)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
     }
   }
 
-  const downloadSingleMessageAsPDF = (msg: Message & { _id: string }, index: number, filename: string) => {
+  const downloadSingleMessageAsPDF = async (msg: Message & { _id: string }, index: number, filename: string) => {
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const parts = splitMessageForPDF(msg.message)
     parts.forEach((part, i) => {
       if (i > 0) pdf.addPage()
       addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
     })
-    pdf.save(filename)
+    await savePDF(pdf, filename)
   }
 
   if (loading) return (

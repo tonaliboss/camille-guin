@@ -37,7 +37,6 @@ export default function VoiceRecorder() {
       mediaRecorder.onstop = () => {
         const mimeType = mediaRecorder.mimeType || 'audio/webm'
         const size = chunksRef.current.reduce((a, b) => a + (b as Blob).size, 0)
-        alert('mimeType: ' + mimeType + ' / size: ' + size)
         setAudioBlob(new Blob(chunksRef.current, { type: mimeType }))
         stream.getTracks().forEach(t => t.stop())
       }
