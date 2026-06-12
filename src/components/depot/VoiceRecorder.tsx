@@ -59,7 +59,8 @@ export default function VoiceRecorder() {
     if (!audioBlob) return
     setIsSending(true)
     try {
-      const fileName = `voice-message-${Date.now()}.webm`
+      const ext = audioBlob.type.includes('mp4') ? 'm4a' : 'webm'
+      const fileName = `voice-message-${Date.now()}.${ext}`
       const bucketPath = `${FOLDERS.AUDIO}/${fileName}`
       const { error } = await supabase.storage.from(BUCKET_NAME).upload(bucketPath, audioBlob, {
         contentType: audioBlob.type,
