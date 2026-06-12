@@ -46,12 +46,11 @@ function AudioRow({ audio, index, hidden, role, player, audioRef, onTogglePlay, 
     <div className="py-5 flex items-center gap-5 group border-b border-stone-200/60 last:border-0">
       <audio
         ref={audioRef}
+        src={audio.url}
         onTimeUpdate={onTimeUpdate}
         onEnded={onEnded}
         onLoadedMetadata={onTimeUpdate}
-      >
-        <source src={audio.url} />
-      </audio>
+      />
 
       <button
         onClick={onTogglePlay}
