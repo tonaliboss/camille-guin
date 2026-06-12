@@ -197,16 +197,20 @@ export default function LivreOrSection({ role, settings }: Props) {
     return pages
   }
 
-  const savePDF = async (pdf: jsPDF, filename: string) => {
-    const pdfBlob = pdf.output('blob')
-    const file = new File([pdfBlob], filename, { type: 'application/pdf' })
+  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: filename })
-        return
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') return
+  const savePDF = async (pdf: jsPDF, filename: string) => {
+    if (isMobile()) {
+      const pdfBlob = pdf.output('blob')
+      const file = new File([pdfBlob], filename, { type: 'application/pdf' })
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: filename })
+          return
+        } catch (err) {
+          if (err instanceof Error && err.name === 'AbortError') return
+        }
       }
     }
     pdf.save(filename)
