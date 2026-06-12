@@ -89,16 +89,10 @@ export default function Depot({ token, settings, role }: Props) {
 
         {settings.guestMessage && (
           <>
-            <p
-              className={cn(tokens.text.body, 'italic')}
-              style={{ color: settings.titleColor + 'CC' }}
-            >
+            <p className="text-[14px] italic text-stone-600 leading-relaxed" style={{ fontFamily: 'var(--font-lora)' }}>
               "{settings.guestMessage}"
             </p>
-            <p
-              className={cn(tokens.text.label, 'text-[10px] mt-3 opacity-60')}
-              style={{ color: settings.titleColor }}
-            >
+            <p className="text-[14px] italic text-stone-600 leading-relaxed mt-3" style={{ fontFamily: 'var(--font-lora)' }}>
               {process.env.NEXT_PUBLIC_BRIDE_NAME} & {process.env.NEXT_PUBLIC_GROOM_NAME}
             </p>
           </>
@@ -175,10 +169,10 @@ export default function Depot({ token, settings, role }: Props) {
             transition={{ duration: 0.6, delay: 0.75 }}
             className={cn(tokens.card.alt, tokens.card.padding, 'flex flex-col items-center text-center group')}
           >
-            <div className={cn(tokens.icon.containerWhite, 'mb-5')}>
+            <div className={cn(tokens.icon.container, 'mb-4')}>
               <FileText strokeWidth={1.5} className="w-6 h-6" />
             </div>
-            <h2 className={cn(tokens.text.cardTitle, 'mb-3')}>Documents</h2>
+            <h2 className={cn(tokens.text.cardTitle, 'mb-3')}>Détails de l’événement</h2>
             <p className={cn(tokens.text.body, 'mb-6')}>Consultez les documents de l'événement.</p>
             <div className="flex flex-col w-full gap-2">
               {settings.menuUrl && (

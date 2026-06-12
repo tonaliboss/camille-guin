@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Download, X, EyeOff, Eye } from 'lucide-react'
+import { Download, X, EyeOff, Eye, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { MediaItem, UserRole, DepotSettings } from '@/types'
 import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
 import { downloadAllAsZip, downloadFile } from '@/lib/download'
@@ -20,6 +20,9 @@ export default function PhotoSection({ role, settings }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+
+  const [lightboxList, setLightboxList] = useState<'public' | 'hidden'>('public')
+  const currentList = lightboxList === 'public' ? media : hiddenMedia
 
   const INITIAL_PHOTOS = 6
   const [showAllMedia, setShowAllMedia] = useState(false)
@@ -48,12 +51,12 @@ export default function PhotoSection({ role, settings }: Props) {
     loadMedia()
   }
 
-  const downloadAllMedia = async () => {
-    if (!media.length || downloading) return
+  const downloadAllMedia = async (items: MediaItem[], folderName: string, zipName: string) => {
+    if (!items.length || downloading) return
     setDownloading(true)
     setDownloadProgress(0)
     try {
-      await downloadAllAsZip(media, 'galerie', 'galerie.zip', setDownloadProgress)
+      await downloadAllAsZip(items, folderName, zipName, setDownloadProgress)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
@@ -84,7 +87,7 @@ export default function PhotoSection({ role, settings }: Props) {
         {role === 'admin' && media.length > 0 && (
           <div className="flex flex-col items-center gap-2 mb-6">
             <button
-              onClick={downloadAllMedia}
+              onClick={() => downloadAllMedia(media, 'galerie', 'galerie.zip')}
               disabled={downloading}
               className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50"
               title={downloading ? 'Téléchargement en cours...' : 'Télécharger toute la galerie'}
@@ -110,16 +113,8 @@ export default function PhotoSection({ role, settings }: Props) {
               <div
                 key={item.id}
                 className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
-                onClick={() => setLightboxIndex(index)}
+                onClick={() => { setLightboxList('public'); setLightboxIndex(index) }}
               >
-                {role === 'admin' && (
-                  <button
-                    onClick={e => { e.stopPropagation(); hideMedia(item) }}
-                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full transition z-10"
-                  >
-                    <EyeOff className="w-4 h-4 text-white" />
-                  </button>
-                )}
                 {item.type === 'image' ? (
                   <img src={item.url} alt="" className="w-full hover:scale-105 transition-transform duration-700" />
                 ) : (
@@ -153,15 +148,33 @@ export default function PhotoSection({ role, settings }: Props) {
                 <p className="text-[11px] text-stone-400 mt-2">{hiddenMedia.length} élément{hiddenMedia.length > 1 ? 's' : ''}</p>
               )}
             </div>
+
+            <div className="flex flex-col items-center gap-2 mb-6">
+              <button
+                onClick={() => downloadAllMedia(hiddenMedia, 'galerie-masquee', 'galerie-masquee.zip')}
+                disabled={downloading}
+                className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50"
+                title={downloading ? 'Téléchargement en cours...' : 'Télécharger la galerie masquée'}
+              >
+                <Download className="w-6 h-6 text-stone-300" />
+              </button>
+              {downloading && (
+                <div className="w-48">
+                  <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-stone-400 transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
+                  </div>
+                  <p className="text-xs text-stone-400 text-center mt-1">{Math.round(downloadProgress)}%</p>
+                </div>
+              )}
+            </div>
+
             <div className="columns-2 gap-3 space-y-3">
-              {hiddenMedia.slice(0, showAllHidden ? undefined : INITIAL_PHOTOS).map(item => (
-                <div key={item.id} className="break-inside-avoid rounded-[6px] overflow-hidden group relative bg-stone-100">
-                  <button
-                    onClick={() => unhideMedia(item)}
-                    className="absolute top-2 right-2 bg-black/60 p-2 rounded-full transition z-10"
-                  >
-                    <Eye className="w-4 h-4 text-white" />
-                  </button>
+              {hiddenMedia.slice(0, showAllHidden ? undefined : INITIAL_PHOTOS).map((item, index) => (
+                <div
+                  key={item.id}
+                  className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
+                  onClick={() => { setLightboxList('hidden'); setLightboxIndex(index) }}
+                >
                   {item.type === 'image' ? (
                     <img src={item.url} alt="" className="w-full" />
                   ) : (
@@ -185,31 +198,52 @@ export default function PhotoSection({ role, settings }: Props) {
 
       {lightboxIndex !== null && (
         <div className="fixed inset-0 z-[100] bg-black/5 backdrop-blur-sm flex items-center justify-center p-4">
-          <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 text-white hover:text-stone-300 transition-colors">
-            <X className="w-8 h-8" />
-          </button>
-          <button onClick={() => downloadFile(media[lightboxIndex].url, media[lightboxIndex].name)} className="absolute top-4 left-4 text-white hover:text-stone-300 transition-colors">
-            <Download className="w-6 h-6" />
-          </button>
-          {media[lightboxIndex].type === 'image' ? (
-            <img src={media[lightboxIndex].url} alt="" className="max-w-full max-h-full object-contain" />
-          ) : (
-            <video src={media[lightboxIndex].url} className="max-w-full max-h-full" controls autoPlay />
-          )}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-4">
-            <button
-              onClick={e => { e.stopPropagation(); setLightboxIndex(prev => (prev! > 0 ? prev! - 1 : media.length - 1)) }}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors"
-            >
-              Précédent
+          <div className="absolute top-4 left-4 right-4 flex justify-between">
+            <button onClick={() => setLightboxIndex(null)} className="bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors">
+              <X className="w-5 h-5" />
             </button>
-            <button
-              onClick={e => { e.stopPropagation(); setLightboxIndex(prev => (prev! < media.length - 1 ? prev! + 1 : 0)) }}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors"
-            >
-              Suivant
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => downloadFile(currentList[lightboxIndex].url, currentList[lightboxIndex].name)} className="bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors">
+                <Download className="w-5 h-5" />
+              </button>
+              {role === 'admin' && (
+                lightboxList === 'public' ? (
+                  <button
+                    onClick={() => { hideMedia(currentList[lightboxIndex]); setLightboxIndex(null) }}
+                    className="bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors"
+                  >
+                    <EyeOff className="w-5 h-5" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { unhideMedia(currentList[lightboxIndex]); setLightboxIndex(null) }}
+                    className="bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors"
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
+                )
+              )}
+            </div>
           </div>
+
+          {currentList[lightboxIndex].type === 'image' ? (
+            <img src={currentList[lightboxIndex].url} alt="" className="max-w-full max-h-full object-contain" />
+          ) : (
+            <video src={currentList[lightboxIndex].url} className="max-w-full max-h-full" controls autoPlay />
+          )}
+
+          <button
+            onClick={e => { e.stopPropagation(); setLightboxIndex(prev => (prev! > 0 ? prev! - 1 : currentList.length - 1)) }}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={e => { e.stopPropagation(); setLightboxIndex(prev => (prev! < currentList.length - 1 ? prev! + 1 : 0)) }}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 p-2.5 rounded-full text-white hover:bg-black/60 transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
       )}
     </>

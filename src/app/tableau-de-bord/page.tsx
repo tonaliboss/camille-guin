@@ -10,7 +10,7 @@ export default async function TableauDeBordPage() {
   const settings = await getSettings()
 
   return (
-    <AppLayout role="admin" token={process.env.NEXT_PUBLIC_DEPOT_TOKEN!} fontFamily={settings.fontFamily}>
+    <AppLayout role="admin" token={process.env.NEXT_PUBLIC_DEPOT_TOKEN!} fontFamily={settings.fontFamily} backgroundColor="#FAFAFA" titleColor="#000000">
       <TableauDeBord settings={settings} />
     </AppLayout>
   )

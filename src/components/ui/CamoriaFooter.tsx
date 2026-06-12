@@ -45,7 +45,7 @@ export default function CamoriaFooter({ settings }: Props) {
 
   const handleShare = async () => {
     const url = process.env.NEXT_PUBLIC_CAMORIA_URL ?? ''
-    const text = `Je suis au mariage de ${process.env.NEXT_PUBLIC_BRIDE_NAME} & ${process.env.NEXT_PUBLIC_GROOM_NAME} ! Ils utilisent une application que tu vas aimer 💍`
+    const text = `Salut ! Je suis à un événement en ce moment et ils utilisent ce service pour récupérer les photos, vidéos & messages des invités. Je trouve ça vraiment sympa, je me suis dit que ça pourrait t'intéresser ☺️ :`
     
     if (navigator.share) {
       try {
@@ -55,7 +55,7 @@ export default function CamoriaFooter({ settings }: Props) {
         toast.error('Erreur lors du partage')
       }
     } else {
-      navigator.clipboard.writeText(`${text}\n${url}`)
+      navigator.clipboard.writeText(`${text}${url}`)
       toast.success('Lien copié !')
     }
   }

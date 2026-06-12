@@ -25,12 +25,12 @@ export default function GalerieSection({ galerieUrl }: Props) {
         <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941]')}>Galerie digitale</h2>
       </div>
       <p className={cn(tokens.text.body, 'mb-6')}>
-        Transmettez ce lien à vos invités pour qu'ils puissent visionner la galerie.
+        Transmettez ce lien à vos invités pour qu'ils puissent visionner la galerie. Rendez-vous dans l’onglet “Prévisualisation” en bas de page pour découvrir la galerie telle que vos invités la verront.
       </p>
 
       <button
         onClick={copyToClipboard}
-        className={cn(tokens.btn.secondary, 'justify-between mb-4')}
+        className={cn(tokens.btn.secondary, 'justify-between')}
       >
         <span className="truncate mr-2 text-stone-400 text-left text-[12px]">{galerieUrl}</span>
         <div className="flex items-center gap-2 text-black shrink-0">
@@ -51,9 +51,9 @@ export default function GalerieSection({ galerieUrl }: Props) {
           <div className="pb-2">
             <div className={cn(tokens.card.alt, 'p-4 space-y-4')}>
               {[
-                { title: '1. Télécharger en HD', desc: 'Récupérez toutes les photos et vidéos dans leur qualité originale.' },
-                { title: '2. Masquer des médias', desc: 'Masquez certaines photos pour qu\'elles n\'apparaissent pas sur la galerie publique.' },
-                { title: '3. Gérer le livre d\'or', desc: 'Masquez les messages que vous ne souhaitez pas afficher.' },
+                { title: '1. Masquer certains éléments aux invités', desc: 'Cliquez sur l\'œil barré sur chaque élément que vous souhaitez masquer. Les éléments masqués seront regroupés dans une même section (ex : "Galerie masquée"), où vous pourrez tous les retrouver et les démasquer en cliquant à nouveau sur l\'œil.' },
+                { title: '2. Télécharger tous les éléments d\'une section d\'un seul coup', desc: 'Cliquez sur l\'icône de téléchargement située sous le titre de chaque section.' },
+                { title: '3. Télécharger les éléments un par un', desc: 'Cliquez sur l\'icône de téléchargement située à côté de chaque élément.' },
               ].map((item, i) => (
                 <div key={i}>
                   {i > 0 && <div className="h-px w-full bg-stone-200/50 mb-4" />}

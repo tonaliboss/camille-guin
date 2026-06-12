@@ -79,10 +79,10 @@ export default function PersonnalisationSection({ settings, onSave, saving }: Pr
   }
 
   return (
-    <div className={cn(tokens.card.alt, tokens.card.padding)}>
+    <div className="bg-[#F0F0F0] border border-[#E5E5E5] rounded-[32px] p-7">
       <div className={tokens.section.cardHeader}>
-        <div className={cn(tokens.section.cardAccent, 'bg-[#6b7562]')} />
-        <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941]')}>Personnalisation</h2>
+        <div className={cn(tokens.section.cardAccent, 'bg-stone-300')} />
+        <h2 className="italic font-bold text-[22px] leading-tight" style={{ color: '#525252' }}>Personnalisation</h2>
       </div>
 
       {/* Mot aux invités */}
@@ -144,41 +144,28 @@ export default function PersonnalisationSection({ settings, onSave, saving }: Pr
         </div>
         <p className={cn(tokens.text.body, 'mb-4 text-[11px]')}>S'applique aux titres et aux boutons de toutes les pages.</p>
 
-        <div className="flex items-center gap-3 mb-4">
-          <div className="h-8 px-4 rounded-full text-[12px] font-semibold flex items-center shadow-sm" style={{ backgroundColor: localThemeColor, color: localButtonTextColor }}>
-            Aperçu
-          </div>
-          <span className="italic font-bold text-[16px]" style={{ color: localTitleColor }}>Titre</span>
+        <div className="grid grid-cols-2 gap-2">
+          {THEME_COLORS.map(swatch => {
+            const isSelected = localThemeColor === swatch.buttonColor && localTitleColor === swatch.titleColor
+            return (
+              <button
+                key={swatch.label}
+                onClick={() => selectTheme(swatch)}
+                className={cn(
+                  'flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl border-2 transition-all',
+                  isSelected ? 'border-black bg-white' : 'border-transparent bg-white/60 hover:bg-white'
+                )}
+              >
+                <div
+                  className="w-8 h-8 rounded-full shrink-0 border border-white/20 shadow-sm"
+                  style={{ backgroundColor: swatch.color }}
+                />
+                <span className="text-[13px] font-medium text-black">{swatch.label}</span>
+                {isSelected && <Check size={14} className="ml-auto text-black" />}
+              </button>
+            )
+          })}
         </div>
-
-        <button
-          onClick={() => selectTheme(THEME_COLORS[0])}
-          className={cn('w-9 h-9 rounded-full border-2 transition-all shadow-sm flex items-center justify-center mb-4', localThemeColor === THEME_COLORS[0].buttonColor ? 'border-black scale-110' : 'border-transparent hover:border-stone-400')}
-          style={{ backgroundColor: THEME_COLORS[0].color }}
-        >
-          {localThemeColor === THEME_COLORS[0].buttonColor && <Check size={14} className="text-white drop-shadow" />}
-        </button>
-
-        {THEME_COLORS.map(swatch => {
-          const isSelected = localThemeColor === swatch.buttonColor && localTitleColor === swatch.titleColor
-          return (
-            <button
-              key={swatch.label}
-              onClick={() => selectTheme(swatch)}
-              className={cn(
-                'flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl border-2 transition-all',
-                isSelected ? 'border-black bg-white' : 'border-transparent bg-white/60 hover:bg-white'
-              )}
-            >
-              <div
-                className="w-8 h-8 rounded-full shrink-0 border border-white/20 shadow-sm"
-                style={{ backgroundColor: swatch.color }}
-              />
-              <span className="text-[13px] font-medium text-black">{swatch.label}</span>
-              {isSelected && <Check size={14} className="ml-auto text-black" />}
-            </button>
-          )
-        })}
       </div>
 
       {/* Police */}
@@ -215,6 +202,7 @@ export default function PersonnalisationSection({ settings, onSave, saving }: Pr
         onClick={handleSave}
         disabled={saving}
         className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+        style={{ backgroundColor: '#525252', color: '#ffffff' }}
       >
         {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
       </button>

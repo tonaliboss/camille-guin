@@ -47,7 +47,7 @@ export default function Galerie({ role, token, settings }: Props) {
       <Navigation />
 
       <PhotoSection role={role} settings={settings} />
-      <LivreOrSection role={role} />
+      <LivreOrSection role={role} settings={settings} />
       <VoeuxAudioSection role={role} settings={settings} />
 
       <CamoriaFooter settings={settings} />

@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight, Download, EyeOff, Eye } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
 import jsPDF from 'jspdf'
-import type { Message, Page, UserRole } from '@/types'
+import type { Message, Page, UserRole, DepotSettings } from '@/types'
 import { getMessages, toggleMediaVisibility } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
   role: UserRole
+  settings: DepotSettings
 }
 
-export default function LivreOrSection({ role }: Props) {
+export default function LivreOrSection({ role, settings }: Props) {
   const [messages, setMessages] = useState<(Message & { _id: string })[]>([])
   const [hiddenMessages, setHiddenMessages] = useState<(Message & { _id: string })[]>([])
   const [loading, setLoading] = useState(true)
@@ -22,6 +22,11 @@ export default function LivreOrSection({ role }: Props) {
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [isFlipping, setIsFlipping] = useState(false)
+  const [flipDirection, setFlipDirection] = useState<'forward' | 'backward'>('forward')
+  
+  const INITIAL_HIDDEN = 3
+  const [showAllHiddenMessages, setShowAllHiddenMessages] = useState(false)
 
   const loadMessages = async () => {
     setLoading(true)
@@ -38,8 +43,7 @@ export default function LivreOrSection({ role }: Props) {
 
   const hideMessage = async (item: Message & { _id: string }) => {
     await toggleMediaVisibility(item._id, true)
-    if (currentPage >= allPages.length - 1 && currentPage > 0) setCurrentPage(currentPage - 1)
-    loadMessages()
+    await loadMessages()
   }
 
   const unhideMessage = async (item: Message & { _id: string }) => {
@@ -90,10 +94,17 @@ export default function LivreOrSection({ role }: Props) {
   }
 
   const allPages = messages.length > 0 ? createPages() : []
+  const safePage = Math.min(currentPage, Math.max(allPages.length - 1, 0))
+  const currentPageData = allPages[safePage]
 
   const handlePageChange = (newPage: number) => {
-    if (newPage < 0 || newPage >= allPages.length) return
-    setCurrentPage(newPage)
+    if (newPage < 0 || newPage >= allPages.length || isFlipping) return
+    setFlipDirection(newPage > safePage ? 'forward' : 'backward')
+    setIsFlipping(true)
+    setTimeout(() => {
+      setCurrentPage(newPage)
+      setIsFlipping(false)
+    }, 800)
   }
 
   const onTouchStart = (e: React.TouchEvent) => { setTouchEnd(null); setTouchStart(e.targetTouches[0].clientX) }
@@ -101,15 +112,15 @@ export default function LivreOrSection({ role }: Props) {
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return
     const distance = touchStart - touchEnd
-    if (distance > 50 && currentPage < allPages.length - 1) handlePageChange(currentPage + 1)
-    if (distance < -50 && currentPage > 0) handlePageChange(currentPage - 1)
+    if (distance > 50 && safePage < allPages.length - 1) handlePageChange(safePage + 1)
+    if (distance < -50 && safePage > 0) handlePageChange(safePage - 1)
   }
 
   const createTextCanvas = (text: string, fontFamily: string, fontSize: number, maxWidth: number, textColor: string): HTMLCanvasElement => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')!
     canvas.width = maxWidth * 3.78
-    ctx.font = `${fontSize * 3.78}px ${fontFamily}`
+    ctx.font = `italic ${fontSize * 3.78}px Georgia, serif`
     ctx.fillStyle = textColor
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
@@ -124,7 +135,7 @@ export default function LivreOrSection({ role }: Props) {
     if (currentLine) lines.push(currentLine)
     const lineHeight = fontSize * 3.78 * 1.5
     canvas.height = lines.length * lineHeight + 20
-    ctx.font = `${fontSize * 3.78}px ${fontFamily}`
+    ctx.font = `italic ${fontSize * 3.78}px Georgia, serif`
     ctx.fillStyle = textColor
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
@@ -137,8 +148,7 @@ export default function LivreOrSection({ role }: Props) {
     const pageHeight = pdf.internal.pageSize.getHeight()
     const margin = 20
     const contentWidth = pageWidth - 2 * margin
-    const fonts = ['Parisienne', 'Sacramento', 'Alex Brush']
-    const selectedFont = fonts[messageIndex % fonts.length]
+    const selectedFont = 'Georgia'
     pdf.setFillColor(255, 255, 255)
     pdf.rect(0, 0, pageWidth, pageHeight, 'F')
     const shadowWidth = 15
@@ -170,43 +180,49 @@ export default function LivreOrSection({ role }: Props) {
     pdf.text(`${pageNum}`, pageWidth / 2, pageHeight - margin - 5, { align: 'center' })
   }
 
+  const splitMessageForPDF = (msg: string, max: number = 200): string[] => {
+    if (msg.length <= max) return [msg]
+    const pages: string[] = []
+    let remaining = msg
+    while (remaining.length > 0) {
+      if (remaining.length <= max) { pages.push(remaining); break }
+      let cutIndex = max
+      const s = remaining.substring(0, max)
+      const lp = s.lastIndexOf('.')
+      if (lp > max * 0.6) cutIndex = lp + 1
+      else { const lc = s.lastIndexOf(','); if (lc > max * 0.6) cutIndex = lc + 1; else { const ls = s.lastIndexOf(' '); if (ls > max * 0.6) cutIndex = ls + 1 } }
+      pages.push(remaining.substring(0, cutIndex).trim())
+      remaining = remaining.substring(cutIndex).trim()
+    }
+    return pages
+  }
+
   const downloadCurrentPageAsPDF = () => {
     if (!allPages.length) return
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const p = allPages[currentPage]
-    addPDFPage(pdf, p.message, p.author, currentPage + 1, p.originalIndex)
-    pdf.save(`page-${currentPage + 1}.pdf`)
+    const p = allPages[safePage]
+    const parts = splitMessageForPDF(p.originalMessage.message)
+    parts.forEach((part, i) => {
+      if (i > 0) pdf.addPage()
+      addPDFPage(pdf, part, i === parts.length - 1 ? p.originalMessage.author : '', i + 1, p.originalIndex)
+    })
+    pdf.save(`message-${p.originalIndex + 1}.pdf`)
   }
-
-  const downloadAllAsPDF = async () => {
-    if (!messages.length || downloading) return
+  
+  const downloadMessagesAsPDF = async (msgs: (Message & { _id: string })[], filename: string) => {
+    if (!msgs.length || downloading) return
     setDownloading(true)
     setDownloadProgress(10)
     try {
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const splitMessageForPDF = (msg: string, max: number = 550): string[] => {
-        if (msg.length <= max) return [msg]
-        const pages: string[] = []
-        let remaining = msg
-        while (remaining.length > 0) {
-          if (remaining.length <= max) { pages.push(remaining); break }
-          let cutIndex = max
-          const s = remaining.substring(0, max)
-          const lp = s.lastIndexOf('.')
-          if (lp > max * 0.6) cutIndex = lp + 1
-          else { const lc = s.lastIndexOf(','); if (lc > max * 0.6) cutIndex = lc + 1; else { const ls = s.lastIndexOf(' '); if (ls > max * 0.6) cutIndex = ls + 1 } }
-          pages.push(remaining.substring(0, cutIndex).trim())
-          remaining = remaining.substring(cutIndex).trim()
-        }
-        return pages
-      }
       const pdfPages: { message: string; author: string; pageNumber: number; messageIndex: number }[] = []
-      messages.forEach((msg, msgIndex) => {
+      msgs.forEach((msg, msgIndex) => {
         const parts = splitMessageForPDF(msg.message)
         parts.forEach((part, partIndex) => {
           pdfPages.push({ message: part, author: partIndex === parts.length - 1 ? msg.author : '', pageNumber: pdfPages.length + 1, messageIndex: msgIndex })
         })
       })
+      console.log('pdfPages', pdfPages.length, pdfPages.map(p => p.message.length))
       for (let i = 0; i < pdfPages.length; i++) {
         if (i > 0) pdf.addPage()
         const p = pdfPages[i]
@@ -215,11 +231,21 @@ export default function LivreOrSection({ role }: Props) {
         await new Promise(r => setTimeout(r, 10))
       }
       setDownloadProgress(100)
-      pdf.save('livre-or.pdf')
+      pdf.save(filename)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
     }
+  }
+
+  const downloadSingleMessageAsPDF = (msg: Message & { _id: string }, index: number, filename: string) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const parts = splitMessageForPDF(msg.message)
+    parts.forEach((part, i) => {
+      if (i > 0) pdf.addPage()
+      addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
+    })
+    pdf.save(filename)
   }
 
   if (loading) return (
@@ -227,8 +253,6 @@ export default function LivreOrSection({ role }: Props) {
       <p className={cn(tokens.text.body, 'text-center')}>Chargement...</p>
     </section>
   )
-
-  const currentPageData = allPages[currentPage]
 
   return (
     <section id="livre-or" className="py-12 px-5 scroll-mt-28">
@@ -246,7 +270,7 @@ export default function LivreOrSection({ role }: Props) {
 
       {role === 'admin' && allPages.length > 0 && (
         <div className="flex flex-col items-center gap-2 mb-6">
-          <button onClick={downloadAllAsPDF} disabled={downloading} className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50">
+          <button onClick={() => downloadMessagesAsPDF(messages, 'livre-or.pdf')} disabled={downloading} className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50">
             <Download className="w-6 h-6 text-stone-300" />
           </button>
           {downloading && (
@@ -263,31 +287,74 @@ export default function LivreOrSection({ role }: Props) {
       {allPages.length === 0 ? (
         <p className={cn(tokens.text.body, 'text-center')}>Aucun message disponible</p>
       ) : (
+        <>
+        <svg width="0" height="0" style={{ position: 'absolute' }}>
+          <defs>
+            <clipPath id="curvedPageClip" clipPathUnits="objectBoundingBox">
+              <path d="M 0,0.01 Q 0.5,0.005 0.97,0.015 Q 0.985,0.25 0.98,0.5 Q 0.985,0.75 0.97,0.985 Q 0.5,0.995 0,0.99 L 0,0.01 Z" />
+            </clipPath>
+          </defs>
+        </svg>
+
         <div
-          className={cn(tokens.card.base, 'px-8 py-14 flex flex-col items-center justify-center relative min-h-[340px]')}
+          className="relative bg-white rounded-[32px] shadow-card border border-stone-100/80 px-8 py-14 flex flex-col items-center justify-center min-h-[340px] overflow-hidden"
+          style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {role === 'admin' && (
-            <button
-              onClick={() => hideMessage(currentPageData.originalMessage)}
-              className="absolute top-3 right-3 p-1.5 text-stone-300 hover:text-black transition-colors"
-              title="Masquer ce message"
-            >
-              <EyeOff className="w-4 h-4" />
-            </button>
-          )}
+          {/* Bande reliure gauche */}
+          <div
+            className="absolute left-0 top-0 bottom-0 w-3 pointer-events-none z-10"
+            style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 100%)' }}
+          />
+            {role === 'admin' && (
+              <button
+                onClick={() => hideMessage(currentPageData.originalMessage)}
+                className="absolute top-3 right-3 p-1.5 text-stone-300 hover:text-black transition-colors"
+                title="Masquer ce message"
+              >
+                <EyeOff className="w-4 h-4" />
+              </button>
+            )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="text-center w-full"
-            >
+            {isFlipping && (
+              <div
+                className="absolute inset-0 bg-white z-20"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                  transformOrigin: 'left center',
+                  animation: flipDirection === 'forward'
+                    ? 'flipPageForward 0.8s ease-in-out forwards'
+                    : 'flipPageBackward 0.8s ease-in-out forwards',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+                  clipPath: 'url(#curvedPageClip)',
+                  WebkitClipPath: 'url(#curvedPageClip)',
+                }}
+              >
+                <div className="h-full flex flex-col items-center justify-center px-4">
+                  <div className="text-[40px] font-serif text-stone-200 leading-none h-6 mb-4">"</div>
+                  <p className="italic text-[20px] leading-[1.6] text-black mb-8 px-4 text-center">
+                    {currentPageData.message}
+                  </p>
+                  {currentPageData.author && (
+                    <p className="font-bold text-[10px] tracking-[0.2em] uppercase text-stone-400">
+                      {currentPageData.author}
+                    </p>
+                  )}
+                </div>
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 50%, transparent 100%)',
+                    animation: 'pageShadow 0.8s ease-in-out',
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="text-center w-full">
               <div className="text-[40px] font-serif text-stone-200 leading-none h-6 mb-4">"</div>
               <p className="italic text-[20px] leading-[1.6] text-black mb-8 px-4">
                 {currentPageData.message}
@@ -297,35 +364,33 @@ export default function LivreOrSection({ role }: Props) {
                   {currentPageData.author}
                 </p>
               )}
-            </motion.div>
-          </AnimatePresence>
+            </div>
 
-          <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}
-              className="w-10 h-10 flex items-center justify-center text-stone-400 hover:text-black transition-colors disabled:opacity-20"
-            >
-              <ChevronLeft strokeWidth={1} className="w-6 h-6" />
-            </button>
-            <button
-              onClick={downloadCurrentPageAsPDF}
-              className="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-black transition-colors"
-            >
-              <Download className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === allPages.length - 1}
-              className="w-10 h-10 flex items-center justify-center text-stone-400 hover:text-black transition-colors disabled:opacity-20"
-            >
-              <ChevronRight strokeWidth={1} className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
+            <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-6">
+              <button
+                onClick={() => handlePageChange(safePage - 1)}
+                disabled={safePage === 0 || isFlipping}
+                className="w-10 h-10 flex items-center justify-center text-stone-400 hover:text-black transition-colors disabled:opacity-20"
+              >
+                <ChevronLeft strokeWidth={1} className="w-6 h-6" />
+              </button>
+              <button
+                onClick={downloadCurrentPageAsPDF}
+                className="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-black transition-colors"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handlePageChange(safePage + 1)}
+                disabled={safePage === allPages.length - 1 || isFlipping}
+                className="w-10 h-10 flex items-center justify-center text-stone-400 hover:text-black transition-colors disabled:opacity-20"
+              >
+                <ChevronRight strokeWidth={1} className="w-6 h-6" />
+              </button>
+            </div>
+          </div></>
       )}
 
-      {/* Messages masqués — admin */}
       {role === 'admin' && hiddenMessages.length > 0 && (
         <div className="mt-12 pt-8 border-t border-stone-100">
           <div className="text-center mb-6 flex flex-col items-center">
@@ -339,15 +404,44 @@ export default function LivreOrSection({ role }: Props) {
               <p className="text-[11px] text-stone-400 mt-2">{hiddenMessages.length} élément{hiddenMessages.length > 1 ? 's' : ''}</p>
             )}
           </div>
+
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <button
+              onClick={() => downloadMessagesAsPDF(hiddenMessages, 'livre-or-masque.pdf')}
+              disabled={downloading}
+              className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50"
+              title="Télécharger tous les messages masqués"
+            >
+              <Download className="w-6 h-6 text-stone-300" />
+            </button>
+            {downloading && (
+              <div className="w-48">
+                <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-stone-400 transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
+                </div>
+                <p className="text-xs text-stone-400 text-center mt-1">{Math.round(downloadProgress)}%</p>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-3">
-            {hiddenMessages.map((msg, index) => (
+            {hiddenMessages.slice(0, showAllHiddenMessages ? undefined : INITIAL_HIDDEN).map((msg, index) => (
               <div key={msg._id} className={cn(tokens.card.base, 'px-6 py-5 relative')}>
-                <button
-                  onClick={() => unhideMessage(msg)}
-                  className="absolute top-3 right-3 p-1.5 text-stone-300 hover:text-black transition-colors"
-                >
-                  <Eye className="w-4 h-4" />
-                </button>
+                <div className="absolute top-3 right-3 flex items-center gap-1">
+                  <button
+                    onClick={() => downloadSingleMessageAsPDF(msg, index, `message-${index + 1}.pdf`)}
+                    className="p-1.5 text-stone-300 hover:text-black transition-colors"
+                    title="Télécharger ce message"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => unhideMessage(msg)}
+                    className="p-1.5 text-stone-300 hover:text-black transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
+                </div>
                 <p className="italic text-[16px] text-black leading-relaxed text-center">{msg.message}</p>
                 {msg.author && (
                   <p className="text-[10px] tracking-widest uppercase text-stone-400 text-center mt-3">{msg.author}</p>
@@ -355,6 +449,15 @@ export default function LivreOrSection({ role }: Props) {
               </div>
             ))}
           </div>
+          {hiddenMessages.length > INITIAL_HIDDEN && (
+            <button
+              onClick={() => setShowAllHiddenMessages(!showAllHiddenMessages)}
+              className={cn(tokens.btn.outline, 'mt-4')}
+              style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
+            >
+              {showAllHiddenMessages ? 'Voir moins' : `Voir tout (+${hiddenMessages.length - INITIAL_HIDDEN})`}
+            </button>
+          )}
         </div>
       )}
     </section>

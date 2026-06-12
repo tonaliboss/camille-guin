@@ -49,17 +49,17 @@ export default function TableauDeBord({ settings }: Props) {
   return (
     <div className="pb-8">
       <header className="pt-8 pb-8 px-5 bg-[#FAFAFA] flex flex-col items-center gap-6">
-        <LogoPill />
+        <LogoPill variant="black" />
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className={cn(tokens.text.title, 'text-[36px] text-center')}
         >
-          Espace <br /><span style={{ color: '#4a5443' }}>Hôtes</span>
+          Tableau <br /><span style={{ color: '#4a5443' }}>de bord</span>
         </motion.h1>
       </header>
 
-      <div className="px-5 space-y-4">
+      <div className="px-5 space-y-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
           <DatesBadge />
         </motion.div>

@@ -65,6 +65,22 @@
   }
 }
 
+@keyframes flipPageForward {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(-180deg); }
+}
+
+@keyframes flipPageBackward {
+  0% { transform: rotateY(-180deg); }
+  100% { transform: rotateY(0deg); }
+}
+
+@keyframes pageShadow {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Classes utilitaires globales qu'on garde pour la galerie */
 .magical-background {
   background-image:

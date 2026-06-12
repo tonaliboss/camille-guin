@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const COOKIE_NAME = 'admin_session'
-const COOKIE_MAX_AGE = 60 * 60 * 24 // 24h
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 1 semaine
 
 export async function POST(request: NextRequest) {
   const { code } = await request.json()
