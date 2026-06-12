@@ -8,6 +8,7 @@ import { getMessages, toggleMediaVisibility } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { downloadFile } from '@/lib/download'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
+import { downloadFileAsAttachment } from '@/lib/download'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
@@ -135,7 +136,7 @@ export default function LivreOrSection({ role, settings }: Props) {
 
     onProgress?.(90)
     const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
-    await downloadFile(data.publicUrl, filename)
+    await downloadFileAsAttachment(data.publicUrl, filename)
     onProgress?.(100)
 
     setTimeout(() => {

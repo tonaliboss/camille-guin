@@ -48,3 +48,17 @@ export async function downloadFile(url: string, name: string) {
   document.body.removeChild(a)
   window.URL.revokeObjectURL(objectUrl)
 }
+
+export async function downloadFileAsAttachment(url: string, name: string) {
+  const response = await fetch(url)
+  const originalBlob = await response.blob()
+  const blob = new Blob([originalBlob], { type: 'application/octet-stream' })
+  const objectUrl = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = objectUrl
+  a.download = name
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  window.URL.revokeObjectURL(objectUrl)
+}
