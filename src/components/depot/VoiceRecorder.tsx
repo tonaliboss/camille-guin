@@ -61,7 +61,9 @@ export default function VoiceRecorder() {
     try {
       const fileName = `voice-message-${Date.now()}.webm`
       const bucketPath = `${FOLDERS.AUDIO}/${fileName}`
-      const { error } = await supabase.storage.from(BUCKET_NAME).upload(bucketPath, audioBlob)
+      const { error } = await supabase.storage.from(BUCKET_NAME).upload(bucketPath, audioBlob, {
+        contentType: audioBlob.type,
+      })
       if (error) throw error
       const res = await fetch('/api/media', {
         method: 'POST',
