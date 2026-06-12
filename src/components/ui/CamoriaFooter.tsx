@@ -66,9 +66,7 @@ export default function CamoriaFooter({ settings }: Props) {
         className={cn(tokens.card.subtle, 'border-0')}
         style={{ backgroundColor: settings.footerColor ?? '#F2EBE0' }}
       >
-        <h2 className="italic font-medium text-[16px] mb-1.5">
-          Vous avez aimé l'expérience ?
-        </h2>
+        <h2 className="italic font-bold text-[18px] mb-2 leading-tight">Vous avez aimé l'expérience ?</h2>
         <p className={cn(tokens.text.body, 'mb-4 max-w-[240px] text-[12px]')}>
           Offrez ce même niveau d'excellence pour votre prochain événement.
         </p>

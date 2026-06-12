@@ -85,6 +85,8 @@ export default function PhotoUpload() {
         )}
 
         <div className={cn(tokens.card.base, tokens.card.padding)}>
+          <h2 className={cn(tokens.text.cardTitle, 'text-center mb-2')}>Déposez vos souvenirs</h2>
+          <p className={cn(tokens.text.body, 'text-center mb-8')}>Partagez des photos et des vidéos aux mariés</p>
           <div
             className={cn(
               'border-2 border-dashed rounded-[32px] p-8 text-center transition-colors',
