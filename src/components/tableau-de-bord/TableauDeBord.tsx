@@ -10,6 +10,7 @@ import { cn } from '@/components/shadcn/utils'
 import { saveSettings } from '@/lib/tableau-de-bord'
 import DatesBadge from '@/components/ui/DatesBadge'
 import LogoPill from '@/components/ui/LogoPill'
+import CamoriaFooter from '@/components/ui/CamoriaFooter'
 import DepotSection from '@/components/tableau-de-bord/DepotSection'
 import GalerieSection from '@/components/tableau-de-bord/GalerieSection'
 import PersonnalisationSection from '@/components/tableau-de-bord/PersonnalisationSection'
@@ -27,6 +28,13 @@ export default function TableauDeBord({ settings }: Props) {
   const depotUrl = `${origin}/depot/${process.env.NEXT_PUBLIC_DEPOT_TOKEN}`
   const galerieUrl = `${origin}/galerie/${process.env.NEXT_PUBLIC_GALERIE_TOKEN}`
   const [previewKey, setPreviewKey] = useState(0)
+
+  const dashboardFooterSettings: DepotSettings = {
+    ...settings,
+    footerColor: '#F0F0F0',
+    themeColor: '#525252',
+    buttonTextColor: '#ffffff',
+  }
 
   useEffect(() => {
     setOrigin(window.location.origin)
@@ -80,9 +88,13 @@ export default function TableauDeBord({ settings }: Props) {
           <PreviewSection previewKey={previewKey} />
         </motion.div>
 
+        <div className="[&>footer]:px-0 [&>footer]:py-0 [&>footer]:mt-0">
+          <CamoriaFooter settings={dashboardFooterSettings} />
+        </div>
+
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.6 }}>
           <LogoutSection />
-        </motion.div>
+        </motion.div>        
       </div>
     </div>
   )

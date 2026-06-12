@@ -1,13 +1,14 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Upload, Copy } from 'lucide-react'
+import { Upload, Copy, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { DepotSettings } from '@/types'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { saveSettings } from '@/lib/tableau-de-bord'
 import { tokens } from '@/lib/design-tokens'
 import { hasFeature } from '@/lib/plan'
+import { shareLink } from '@/lib/share'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
@@ -27,6 +28,12 @@ export default function DepotSection({ depotUrl, settings }: Props) {
     navigator.clipboard.writeText(depotUrl)
     toast.success('Lien dépôt copié !')
   }
+
+  const handleShare = () => shareLink(
+    depotUrl,
+    'Salut ! Merci encore d\'avoir partagé ce bel événement avec nous ❤️ Retrouve tous les souvenirs réunis ici :',
+    'Plateforme de dépôt'
+  )
 
   const handleFileUpload = async (
     file: File,
@@ -76,6 +83,10 @@ export default function DepotSection({ depotUrl, settings }: Props) {
           <Copy className="w-4 h-4" />
           <span>Copier</span>
         </div>
+      </button>
+      <button onClick={handleShare} className={cn(tokens.btn.secondary, 'justify-center mt-2')}>
+        <Share2 className="w-4 h-4" />
+        <span>Partager</span>
       </button>
 
       {/* Menu et programme */}

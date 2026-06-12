@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, ChevronDown } from 'lucide-react'
+import { Copy, ChevronDown, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { tokens } from '@/lib/design-tokens'
+import { shareLink } from '@/lib/share'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
@@ -17,6 +18,12 @@ export default function GalerieSection({ galerieUrl }: Props) {
     navigator.clipboard.writeText(galerieUrl)
     toast.success('Lien galerie copié !')
   }
+
+  const handleShare = () => shareLink(
+    galerieUrl,
+    'Salut ! Merci encore d\'avoir partagé ce bel événement avec nous ❤️ Retrouve tous les souvenirs réunis ici :',
+    'Galerie Digitale'
+  )
 
   return (
     <div className={cn(tokens.card.base, tokens.card.padding)}>
@@ -37,6 +44,10 @@ export default function GalerieSection({ galerieUrl }: Props) {
           <Copy className="w-4 h-4" />
           <span>Copier</span>
         </div>
+      </button>
+      <button onClick={handleShare} className={cn(tokens.btn.secondary, 'justify-center mt-2')}>
+        <Share2 className="w-4 h-4" />
+        <span>Partager</span>
       </button>
 
       <div className="mt-4 pt-4 border-t border-stone-200/60">

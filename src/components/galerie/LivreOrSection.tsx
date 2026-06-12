@@ -6,6 +6,8 @@ import jsPDF from 'jspdf'
 import type { Message, Page, UserRole, DepotSettings } from '@/types'
 import { getMessages, toggleMediaVisibility } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
+import { downloadFile } from '@/lib/download'
+import { supabase, BUCKET_NAME } from '@/lib/supabase'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
@@ -116,6 +118,26 @@ export default function LivreOrSection({ role, settings }: Props) {
     if (distance < -50 && safePage > 0) handlePageChange(safePage - 1)
   }
 
+  const downloadPDF = async (pdf: jsPDF, filename: string) => {
+    const blob = pdf.output('blob')
+    const path = `temp-pdf/${Date.now()}-${filename}`
+
+    const { error } = await supabase.storage.from(BUCKET_NAME).upload(path, blob, {
+      contentType: 'application/pdf',
+    })
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
+    await downloadFile(data.publicUrl, filename)
+
+    setTimeout(() => {
+      supabase.storage.from(BUCKET_NAME).remove([path])
+    }, 60_000)
+  }
+
   const createTextCanvas = (text: string, fontFamily: string, fontSize: number, maxWidth: number, textColor: string): HTMLCanvasElement => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')!
@@ -135,6 +157,11 @@ export default function LivreOrSection({ role, settings }: Props) {
     if (currentLine) lines.push(currentLine)
     const lineHeight = fontSize * 3.78 * 1.5
     canvas.height = lines.length * lineHeight + 20
+
+    // Remplir en blanc avant de dessiner (nécessaire pour JPEG, qui n'a pas de transparence)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
     ctx.font = `italic ${fontSize * 3.78}px Georgia, serif`
     ctx.fillStyle = textColor
     ctx.textAlign = 'center'
@@ -168,11 +195,11 @@ export default function LivreOrSection({ role, settings }: Props) {
     const messageCanvas = createTextCanvas(message, selectedFont, 10, contentWidth - 40, 'rgb(30, 41, 59)')
     const messageHeight = messageCanvas.height / 3.78
     const messageY = pageHeight / 2 - messageHeight / 2
-    pdf.addImage(messageCanvas.toDataURL('image/png'), 'PNG', margin + 20, messageY, contentWidth - 40, messageHeight)
+    pdf.addImage(messageCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin + 20, messageY, contentWidth - 40, messageHeight)
     if (author) {
       const authorCanvas = createTextCanvas(author, selectedFont, 9, contentWidth - 40, 'rgb(55, 65, 81)')
       const authorHeight = authorCanvas.height / 3.78
-      pdf.addImage(authorCanvas.toDataURL('image/png'), 'PNG', margin + 20, messageY + messageHeight + 20, contentWidth - 40, authorHeight)
+      pdf.addImage(authorCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin + 20, messageY + messageHeight + 20, contentWidth - 40, authorHeight)
     }
     pdf.setFont('times', 'italic')
     pdf.setFontSize(10)
@@ -197,25 +224,6 @@ export default function LivreOrSection({ role, settings }: Props) {
     return pages
   }
 
-  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-
-  const savePDF = async (pdf: jsPDF, filename: string) => {
-    if (isMobile()) {
-      const pdfBlob = pdf.output('blob')
-      const file = new File([pdfBlob], filename, { type: 'application/pdf' })
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title: filename })
-          return
-        } catch (err) {
-          if (err instanceof Error && err.name === 'AbortError') return
-        }
-      }
-    }
-    pdf.save(filename)
-  }
-
   const downloadCurrentPageAsPDF = async () => {
     if (!allPages.length) return
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
@@ -225,9 +233,19 @@ export default function LivreOrSection({ role, settings }: Props) {
       if (i > 0) pdf.addPage()
       addPDFPage(pdf, part, i === parts.length - 1 ? p.originalMessage.author : '', i + 1, p.originalIndex)
     })
-    await savePDF(pdf, `message-${p.originalIndex + 1}.pdf`)
+    await downloadPDF(pdf, `message-${p.originalIndex + 1}.pdf`)
   }
-  
+
+  const downloadSingleMessageAsPDF = async (msg: Message & { _id: string }, index: number, filename: string) => {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const parts = splitMessageForPDF(msg.message)
+    parts.forEach((part, i) => {
+      if (i > 0) pdf.addPage()
+      addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
+    })
+    await downloadPDF(pdf, filename)
+  }
+
   const downloadMessagesAsPDF = async (msgs: (Message & { _id: string })[], filename: string) => {
     if (!msgs.length || downloading) return
     setDownloading(true)
@@ -245,25 +263,16 @@ export default function LivreOrSection({ role, settings }: Props) {
         if (i > 0) pdf.addPage()
         const p = pdfPages[i]
         addPDFPage(pdf, p.message, p.author, p.pageNumber, p.messageIndex)
-        setDownloadProgress(10 + ((i + 1) / pdfPages.length) * 85)
+        setDownloadProgress(10 + ((i + 1) / pdfPages.length) * 80)
         await new Promise(r => setTimeout(r, 10))
       }
+      setDownloadProgress(95)
+      await downloadPDF(pdf, filename)
       setDownloadProgress(100)
-      await savePDF(pdf, filename)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
     }
-  }
-
-  const downloadSingleMessageAsPDF = async (msg: Message & { _id: string }, index: number, filename: string) => {
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const parts = splitMessageForPDF(msg.message)
-    parts.forEach((part, i) => {
-      if (i > 0) pdf.addPage()
-      addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
-    })
-    await savePDF(pdf, filename)
   }
 
   if (loading) return (
