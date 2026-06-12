@@ -120,10 +120,11 @@ export default function LivreOrSection({ role, settings }: Props) {
     if (distance < -50 && safePage > 0) handlePageChange(safePage - 1)
   }
 
-  const downloadPDF = async (pdf: jsPDF, filename: string) => {
+  const downloadPDF = async (pdf: jsPDF, filename: string, onProgress?: (p: number) => void) => {
     const blob = pdf.output('blob')
     const path = `temp-pdf/${Date.now()}-${filename}`
 
+    onProgress?.(75)
     const { error } = await supabase.storage.from(BUCKET_NAME).upload(path, blob, {
       contentType: 'application/pdf',
     })
@@ -132,8 +133,10 @@ export default function LivreOrSection({ role, settings }: Props) {
       return
     }
 
+    onProgress?.(90)
     const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(path)
     await downloadFile(data.publicUrl, filename)
+    onProgress?.(100)
 
     setTimeout(() => {
       supabase.storage.from(BUCKET_NAME).remove([path])

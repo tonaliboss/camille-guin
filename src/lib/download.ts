@@ -5,8 +5,6 @@ interface DownloadableItem {
   name: string
 }
 
-const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-
 export async function downloadAllAsZip(
   items: DownloadableItem[],
   folderName: string,
@@ -28,18 +26,6 @@ export async function downloadAllAsZip(
   const content = await zip.generateAsync({ type: 'blob' })
   onProgress(100)
 
-  if (isMobile() && navigator.canShare) {
-    const file = new File([content], zipName, { type: 'application/zip' })
-    if (navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: zipName })
-        return
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') return
-      }
-    }
-  }
-
   const url = window.URL.createObjectURL(content)
   const a = document.createElement('a')
   a.href = url
@@ -53,19 +39,6 @@ export async function downloadAllAsZip(
 export async function downloadFile(url: string, name: string) {
   const response = await fetch(url)
   const blob = await response.blob()
-
-  if (isMobile() && navigator.canShare) {
-    const file = new File([blob], name, { type: blob.type })
-    if (navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: name })
-        return
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') return
-      }
-    }
-  }
-
   const objectUrl = window.URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = objectUrl
