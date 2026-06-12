@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Download, EyeOff, Eye } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, EyeOff, Eye, Loader2 } from 'lucide-react'
 import jsPDF from 'jspdf'
 import type { Message, Page, UserRole, DepotSettings } from '@/types'
 import { getMessages, toggleMediaVisibility } from '@/lib/media'
@@ -24,8 +24,10 @@ export default function LivreOrSection({ role, settings }: Props) {
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [singleDownloading, setSingleDownloading] = useState<string | null>(null)
   const [isFlipping, setIsFlipping] = useState(false)
   const [flipDirection, setFlipDirection] = useState<'forward' | 'backward'>('forward')
+  
   
   const INITIAL_HIDDEN = 3
   const [showAllHiddenMessages, setShowAllHiddenMessages] = useState(false)
@@ -225,25 +227,36 @@ export default function LivreOrSection({ role, settings }: Props) {
   }
 
   const downloadCurrentPageAsPDF = async () => {
-    if (!allPages.length) return
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const p = allPages[safePage]
-    const parts = splitMessageForPDF(p.originalMessage.message)
-    parts.forEach((part, i) => {
-      if (i > 0) pdf.addPage()
-      addPDFPage(pdf, part, i === parts.length - 1 ? p.originalMessage.author : '', i + 1, p.originalIndex)
-    })
-    await downloadPDF(pdf, `message-${p.originalIndex + 1}.pdf`)
+    if (!allPages.length || singleDownloading) return
+    setSingleDownloading('current')
+    try {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const p = allPages[safePage]
+      const parts = splitMessageForPDF(p.originalMessage.message)
+      parts.forEach((part, i) => {
+        if (i > 0) pdf.addPage()
+        addPDFPage(pdf, part, i === parts.length - 1 ? p.originalMessage.author : '', i + 1, p.originalIndex)
+      })
+      await downloadPDF(pdf, `message-${p.originalIndex + 1}.pdf`)
+    } finally {
+      setSingleDownloading(null)
+    }
   }
 
   const downloadSingleMessageAsPDF = async (msg: Message & { _id: string }, index: number, filename: string) => {
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const parts = splitMessageForPDF(msg.message)
-    parts.forEach((part, i) => {
-      if (i > 0) pdf.addPage()
-      addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
-    })
-    await downloadPDF(pdf, filename)
+    if (singleDownloading) return
+    setSingleDownloading(msg._id)
+    try {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const parts = splitMessageForPDF(msg.message)
+      parts.forEach((part, i) => {
+        if (i > 0) pdf.addPage()
+        addPDFPage(pdf, part, i === parts.length - 1 ? msg.author : '', i + 1, index)
+      })
+      await downloadPDF(pdf, filename)
+    } finally {
+      setSingleDownloading(null)
+    }
   }
 
   const downloadMessagesAsPDF = async (msgs: (Message & { _id: string })[], filename: string) => {
@@ -403,9 +416,10 @@ export default function LivreOrSection({ role, settings }: Props) {
               </button>
               <button
                 onClick={downloadCurrentPageAsPDF}
-                className="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-black transition-colors"
+                disabled={!!singleDownloading}
+                className="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-black transition-colors disabled:opacity-50"
               >
-                <Download className="w-4 h-4" />
+                {singleDownloading === 'current' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               </button>
               <button
                 onClick={() => handlePageChange(safePage + 1)}
@@ -457,10 +471,11 @@ export default function LivreOrSection({ role, settings }: Props) {
                 <div className="absolute top-3 right-3 flex items-center gap-1">
                   <button
                     onClick={() => downloadSingleMessageAsPDF(msg, index, `message-${index + 1}.pdf`)}
-                    className="p-1.5 text-stone-300 hover:text-black transition-colors"
+                    disabled={!!singleDownloading}
+                    className="p-1.5 text-stone-300 hover:text-black transition-colors disabled:opacity-50"
                     title="Télécharger ce message"
                   >
-                    <Download className="w-4 h-4" />
+                    {singleDownloading === msg._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   </button>
                   <button
                     onClick={() => unhideMessage(msg)}
