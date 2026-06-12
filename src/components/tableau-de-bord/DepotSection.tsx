@@ -7,6 +7,7 @@ import type { DepotSettings } from '@/types'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { saveSettings } from '@/lib/tableau-de-bord'
 import { tokens } from '@/lib/design-tokens'
+import { hasFeature } from '@/lib/plan'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
@@ -77,83 +78,86 @@ export default function DepotSection({ depotUrl, settings }: Props) {
         </div>
       </button>
 
-      {/* Menu */}
-      <div className={cn(tokens.card.alt, 'p-4 mt-4 space-y-3')}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-[13px] font-semibold text-black">Menu</h3>
-            <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+      {/* Menu et programme */}
+      {hasFeature('menu') && (
+        <>
+          <div className={cn(tokens.card.alt, 'p-4 mt-4 space-y-3')}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-semibold text-black">Menu</h3>
+                <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+              </div>
+              {localMenuUrl && (
+                <a href={localMenuUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
+                  Voir
+                </a>
+              )}
+            </div>
+            {localMenuUrl ? (
+              <button
+                onClick={() => handleDeleteFile('menu', setLocalMenuUrl)}
+                className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
+              >
+                Supprimer le menu
+              </button>
+            ) : (
+              <button
+                onClick={() => menuInputRef.current?.click()}
+                disabled={uploadingMenu}
+                className={cn(tokens.btn.secondary, 'border-dashed')}
+              >
+                <Upload className="w-4 h-4" />
+                {uploadingMenu ? 'Envoi...' : 'Importer un menu'}
+              </button>
+            )}
+            <input
+              ref={menuInputRef}
+              type="file"
+              accept=".pdf,image/*"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'menu', setUploadingMenu, setLocalMenuUrl) }}
+            />
           </div>
-          {localMenuUrl && (
-            <a href={localMenuUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
-              Voir
-            </a>
-          )}
-        </div>
-        {localMenuUrl ? (
-          <button
-            onClick={() => handleDeleteFile('menu', setLocalMenuUrl)}
-            className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
-          >
-            Supprimer le menu
-          </button>
-        ) : (
-          <button
-            onClick={() => menuInputRef.current?.click()}
-            disabled={uploadingMenu}
-            className={cn(tokens.btn.secondary, 'border-dashed')}
-          >
-            <Upload className="w-4 h-4" />
-            {uploadingMenu ? 'Envoi...' : 'Importer un menu'}
-          </button>
-        )}
-        <input
-          ref={menuInputRef}
-          type="file"
-          accept=".pdf,image/*"
-          className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'menu', setUploadingMenu, setLocalMenuUrl) }}
-        />
-      </div>
 
-      {/* Programme */}
-      <div className={cn(tokens.card.alt, 'p-4 mt-2 space-y-3')}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-[13px] font-semibold text-black">Programme</h3>
-            <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+          <div className={cn(tokens.card.alt, 'p-4 mt-2 space-y-3')}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-[13px] font-semibold text-black">Programme</h3>
+                <p className={cn(tokens.text.body, 'text-[11px]')}>PDF ou image visible sur la plateforme de dépôt.</p>
+              </div>
+              {localPlanningUrl && (
+                <a href={localPlanningUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
+                  Voir
+                </a>
+              )}
+            </div>
+            {localPlanningUrl ? (
+              <button
+                onClick={() => handleDeleteFile('planning', setLocalPlanningUrl)}
+                className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
+              >
+                Supprimer le programme
+              </button>
+            ) : (
+              <button
+                onClick={() => planningInputRef.current?.click()}
+                disabled={uploadingPlanning}
+                className={cn(tokens.btn.secondary, 'border-dashed')}
+              >
+                <Upload className="w-4 h-4" />
+                {uploadingPlanning ? 'Envoi...' : 'Importer un programme'}
+              </button>
+            )}
+            <input
+              ref={planningInputRef}
+              type="file"
+              accept=".pdf,image/*"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'planning', setUploadingPlanning, setLocalPlanningUrl) }}
+            />
           </div>
-          {localPlanningUrl && (
-            <a href={localPlanningUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-[#4E5941] font-medium underline">
-              Voir
-            </a>
-          )}
-        </div>
-        {localPlanningUrl ? (
-          <button
-            onClick={() => handleDeleteFile('planning', setLocalPlanningUrl)}
-            className="w-full py-2 px-4 rounded-full text-[12px] font-semibold text-red-500 border border-red-100 bg-red-50 hover:bg-red-100 transition-colors"
-          >
-            Supprimer le programme
-          </button>
-        ) : (
-          <button
-            onClick={() => planningInputRef.current?.click()}
-            disabled={uploadingPlanning}
-            className={cn(tokens.btn.secondary, 'border-dashed')}
-          >
-            <Upload className="w-4 h-4" />
-            {uploadingPlanning ? 'Envoi...' : 'Importer un programme'}
-          </button>
-        )}
-        <input
-          ref={planningInputRef}
-          type="file"
-          accept=".pdf,image/*"
-          className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f, 'planning', setUploadingPlanning, setLocalPlanningUrl) }}
-        />
-      </div>
+        </>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
+import { isHeic, convertHeicToJpeg } from '@/lib/fileOptimization'
 
 export interface UploadProgress {
   fileName: string
@@ -31,9 +32,16 @@ export const useFileUpload = (folderName: string, hidden: boolean = false) => {
     })
 
     try {
-      updateProgress(file.name, { status: 'uploading', progress: 30 })
+      updateProgress(file.name, { status: 'uploading', progress: 10 })
 
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'unknown'
+      let processedFile = file
+      if (isHeic(file)) {
+        processedFile = await convertHeicToJpeg(file)
+      }
+
+      updateProgress(file.name, { progress: 30 })
+
+      const fileExt = processedFile.name.split('.').pop()?.toLowerCase() || 'unknown'
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
       const bucketPath = `${folderName}/${fileName}`
 
@@ -41,14 +49,13 @@ export const useFileUpload = (folderName: string, hidden: boolean = false) => {
 
       const { error: uploadError } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(bucketPath, file)
+        .upload(bucketPath, processedFile)
 
       if (uploadError) throw uploadError
 
-      // Déterminer le type
-      const type = file.type.startsWith('audio/')
+      const type = processedFile.type.startsWith('audio/')
         ? 'audio'
-        : file.type.startsWith('video/')
+        : processedFile.type.startsWith('video/')
         ? 'video'
         : 'image'
 

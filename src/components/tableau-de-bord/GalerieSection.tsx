@@ -39,7 +39,7 @@ export default function GalerieSection({ galerieUrl }: Props) {
         </div>
       </button>
 
-      <div className="border-t border-stone-100 pt-2">
+      <div className="mt-4 pt-4 border-t border-stone-200/60">
         <button
           onClick={() => setShowHelp(!showHelp)}
           className="flex items-center justify-between w-full py-3 text-left"

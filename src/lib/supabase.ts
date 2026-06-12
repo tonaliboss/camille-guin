@@ -16,4 +16,5 @@ export const FOLDERS = {
   AUDIO: 'audio',
   ECRIT: 'ecrit',
   PLANNING: 'planning',
+  RECAP: 'recap',
 } as const;

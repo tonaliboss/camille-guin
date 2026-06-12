@@ -3,14 +3,22 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 
-const sections = [
+const baseSections = [
   { id: 'galerie', label: 'Galerie' },
   { id: 'livre-or', label: "Livre d'or" },
   { id: 'voeux-audio', label: 'Messages audio' },
 ]
 
-export default function Navigation() {
-  const [activeSection, setActiveSection] = useState('galerie')
+interface Props {
+  videoUrl: string | null
+}
+
+export default function Navigation({ videoUrl }: Props) {
+  const sections = videoUrl
+    ? [{ id: 'video', label: 'Vidéo récap' }, ...baseSections]
+    : baseSections
+
+  const [activeSection, setActiveSection] = useState(sections[0].id)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +36,7 @@ export default function Navigation() {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [sections])
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })

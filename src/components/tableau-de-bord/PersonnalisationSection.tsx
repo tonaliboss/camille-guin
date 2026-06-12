@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
 import { THEME_COLORS, FONTS } from '@/lib/tableau-de-bord'
 import { tokens, fontMap } from '@/lib/design-tokens'
+import { hasFeature } from '@/lib/plan'
 import { cn } from '@/components/shadcn/utils'
 import type { DepotSettings, FontFamily } from '@/types'
 
@@ -169,34 +170,36 @@ export default function PersonnalisationSection({ settings, onSave, saving }: Pr
       </div>
 
       {/* Police */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <Type className="w-4 h-4 text-stone-400" />
-          <h3 className="text-[13px] font-semibold text-black">Police</h3>
-        </div>
-        <p className={cn(tokens.text.body, 'mb-4 text-[11px]')}>S'applique à tout le texte de la plateforme.</p>
-        <div className="space-y-2">
-          {FONTS.map(font => (
-            <button
-              key={font.value}
-              onClick={() => setLocalFontFamily(font.value)}
-              className={cn(
-                'w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 transition-all',
-                localFontFamily === font.value ? 'border-black bg-white' : 'border-transparent bg-white/60 hover:bg-white'
-              )}
-            >
-              <span className="text-[11px] font-medium text-stone-400 uppercase tracking-widest">{font.label}</span>
-              <span
-                data-font-preview
-                className="text-[18px] italic"
-                style={{ '--preview-font': fontMap[font.value] } as React.CSSProperties}
+      {hasFeature('fontCustomization') && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-1">
+            <Type className="w-4 h-4 text-stone-400" />
+            <h3 className="text-[13px] font-semibold text-black">Police</h3>
+          </div>
+          <p className={cn(tokens.text.body, 'mb-4 text-[11px]')}>S'applique à tout le texte de la plateforme.</p>
+          <div className="space-y-2">
+            {FONTS.map(font => (
+              <button
+                key={font.value}
+                onClick={() => setLocalFontFamily(font.value)}
+                className={cn(
+                  'w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 transition-all',
+                  localFontFamily === font.value ? 'border-black bg-white' : 'border-transparent bg-white/60 hover:bg-white'
+                )}
               >
-                {font.preview}
-              </span>
-            </button>
-          ))}
+                <span className="text-[11px] font-medium text-stone-400 uppercase tracking-widest">{font.label}</span>
+                <span
+                  data-font-preview
+                  className="text-[18px] italic"
+                  style={{ '--preview-font': fontMap[font.value] } as React.CSSProperties}
+                >
+                  {font.preview}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <button
         onClick={handleSave}

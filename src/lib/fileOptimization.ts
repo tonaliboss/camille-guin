@@ -187,3 +187,21 @@ export const getOptimalChunkSize = (fileSize: number): number => {
   if (fileSize < 50 * 1024 * 1024) return 2 * 1024 * 1024; // 2MB pour fichiers moyens
   return 4 * 1024 * 1024; // 4MB pour gros fichiers
 };
+
+export const isHeic = (file: File): boolean => {
+  return file.type === 'image/heic' || file.type === 'image/heif' || /\.(heic|heif)$/i.test(file.name)
+}
+
+export const convertHeicToJpeg = async (file: File): Promise<File> => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const res = await fetch('/api/convert-heic', { method: 'POST', body: formData })
+  if (!res.ok) throw new Error('Conversion HEIC échouée')
+
+  const blob = await res.blob()
+  return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+    type: 'image/jpeg',
+    lastModified: Date.now(),
+  })
+}

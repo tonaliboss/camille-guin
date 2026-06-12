@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import type { DepotSettings, UserRole } from '@/types'
 import { usePreviewMode } from '@/hooks/usePreviewMode';
 import { WEDDING_DATE, formatDate } from '@/lib/dates'
+import { hasFeature } from '@/lib/plan'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { tokens } from '@/lib/design-tokens';
 import { cn } from '@/components/shadcn/utils';
@@ -162,7 +163,7 @@ export default function Depot({ token, settings, role }: Props) {
           </motion.div>
         </div>
 
-        {(settings.menuUrl || settings.planningUrl) && (
+        {hasFeature('menu') && (settings.menuUrl || settings.planningUrl) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
