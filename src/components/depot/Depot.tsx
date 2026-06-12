@@ -52,14 +52,26 @@ export default function Depot({ token, settings, role }: Props) {
       <HeroBanner role={role} settings={settings} connexionPath={`/connexion?from=/depot/${token}`}>
         <div className="relative h-full z-10 flex items-end justify-center pb-12">
           <div className="text-center text-white flex flex-col items-center">
-            <p className={tokens.text.eyebrow}>Bienvenue au mariage de</p>
-            <h1 className="italic font-bold text-[44px] leading-[1.05] mt-4">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className={tokens.text.eyebrow}
+            >
+              Bienvenue au mariage de
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 0.9, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              className="text-white italic font-bold text-[44px] leading-[1.05] mt-4"
+            >
               {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
               <span className="text-white/90">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
-            </h1>
+            </motion.h1>
           </div>
-        </div>
+        </div> 
       </HeroBanner>
 
       <motion.div
@@ -68,9 +80,9 @@ export default function Depot({ token, settings, role }: Props) {
         transition={{ duration: 0.6, delay: 0.3 }}
         className={cn(tokens.card.base, tokens.card.padding, 'mx-5 -mt-8 relative z-10')}
       >
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-4" style={{ color: settings.titleColor }}>
           <Calendar strokeWidth={1.5} className="w-6 h-6 text-black" />
-          <span className=" italic font-bold text-[22px] text-black">
+          <span className="italic font-bold text-[22px]">
             {formatDate(WEDDING_DATE)}
           </span>
         </div>
@@ -124,11 +136,11 @@ export default function Depot({ token, settings, role }: Props) {
             <div className={cn(tokens.icon.container, 'mb-4')}>
               <PenLine strokeWidth={1.5} className="w-6 h-6" />
             </div>
-            <h2 className="italic font-bold text-[18px] text-black mb-2 leading-tight">Livre d'or</h2>
+            <h2 className="italic font-bold text-[18px] mb-2 leading-tight">Livre d'or</h2>
             <p className={cn(tokens.text.body, 'mb-6 flex-1 text-[12px]')}>Envoyez un beau message aux mariés</p>
             <button
-              className={tokens.btn.outline}
-              style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
+              className={tokens.btn.primary}
+              style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
               onClick={() => router.push(isPreview ? `/depot/${token}/livre-or?preview=1` : `/depot/${token}/livre-or`)}
             >
               <span>Message écrit</span>
@@ -144,11 +156,11 @@ export default function Depot({ token, settings, role }: Props) {
             <div className={cn(tokens.icon.container, 'mb-4')}>
               <Mic strokeWidth={1.5} className="w-6 h-6" />
             </div>
-            <h2 className="italic font-bold text-[18px] text-black mb-2 leading-tight">Message vocal</h2>
+            <h2 className="italic font-bold text-[18px] mb-2 leading-tight">Message vocal</h2>
             <p className={cn(tokens.text.body, 'mb-6 flex-1 text-[12px]')}>Enregistrez vos vœux pour les mariés</p>
             <button
-              className={tokens.btn.outline}
-              style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
+              className={tokens.btn.primary}
+              style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
               onClick={() => router.push(isPreview ? `/depot/${token}/message-vocal?preview=1` : `/depot/${token}/message-vocal`)}
             >
               <span>Message audio</span>
@@ -194,7 +206,7 @@ export default function Depot({ token, settings, role }: Props) {
 
       </main>
 
-      <CamoriaFooter />
+      <CamoriaFooter settings={settings} />
     </div>
   )
 }

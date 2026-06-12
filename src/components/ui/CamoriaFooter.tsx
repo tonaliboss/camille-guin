@@ -7,8 +7,13 @@ import { cn } from '@/components/shadcn/utils'
 import { tokens } from '@/lib/design-tokens'
 import { toast } from 'sonner'
 import { Share2 } from 'lucide-react'
+import type { DepotSettings } from '@/types'
 
-export default function CamoriaFooter() {
+interface Props {
+  settings: DepotSettings
+}
+
+export default function CamoriaFooter({ settings }: Props) {
   const [showReview, setShowReview] = useState(false)
   const [rating, setRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
@@ -57,8 +62,11 @@ export default function CamoriaFooter() {
 
   return (
     <footer className="px-5 py-8 mt-4">
-      <div className={tokens.card.subtle}>
-        <h2 className="italic font-medium text-[16px] text-black mb-1.5">
+      <div
+        className={cn(tokens.card.subtle, 'border-0')}
+        style={{ backgroundColor: settings.footerColor ?? '#F2EBE0' }}
+      >
+        <h2 className="italic font-medium text-[16px] mb-1.5">
           Vous avez aimé l'expérience ?
         </h2>
         <p className={cn(tokens.text.body, 'mb-4 max-w-[240px] text-[12px]')}>
@@ -131,7 +139,8 @@ export default function CamoriaFooter() {
         <div className="flex w-full gap-2">
           <button
             onClick={handleShare}
-            className={cn(tokens.btn.sm, 'flex-1 bg-white text-black border border-stone-200/80 hover:bg-stone-50')}
+            className={cn(tokens.btn.sm, 'flex-1 border')}
+            style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
           >
             <Share2 className="w-3 h-3" />
             <span>Partager</span>
@@ -147,7 +156,8 @@ export default function CamoriaFooter() {
             href={process.env.NEXT_PUBLIC_CAMORIA_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(tokens.btn.sm, 'flex-1 bg-black text-white hover:bg-stone-800')}
+            className={cn(tokens.btn.sm, 'flex-1')}
+            style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
           >
             <span>Découvrir</span>
             <ExternalLink className="w-3 h-3" />

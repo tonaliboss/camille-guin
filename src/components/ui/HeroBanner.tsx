@@ -20,7 +20,7 @@ export default function HeroBanner({ role, settings, connexionPath, children }: 
   const { isPreview } = usePreviewMode()
 
   const bannerStyle = settings.bannerType === 'solid'
-    ? { backgroundColor: settings.bannerColor }
+    ? { backgroundColor: settings.bannerHeroColor ?? settings.bannerColor }
     : undefined
 
   const bannerSrc = settings.bannerType === 'custom' && settings.bannerImageUrl

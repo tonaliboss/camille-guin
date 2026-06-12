@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Upload, Image as ImageIcon, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import type { DepotSettings } from '@/types'
 import { useFileUpload } from '@/hooks/useFileUpload'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { FOLDERS } from '@/lib/supabase'
@@ -13,7 +14,11 @@ import { cn } from '@/components/shadcn/utils'
 import FileUploadProgress from '@/components/ui/FileUploadProgress'
 import HiddenToggle from '@/components/ui/HiddenToggle'
 
-export default function PhotoUpload() {
+interface Props {
+  settings: DepotSettings
+}
+
+export default function PhotoUpload({ settings }: Props) {
   const router = useRouter()
   const { isPreview, executeIfNotPreview } = usePreviewMode()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -72,7 +77,6 @@ export default function PhotoUpload() {
         <button onClick={() => router.back()} className={tokens.btn.ghost}>
           <ArrowLeft size={20} />
         </button>
-        <h1 className={cn(tokens.text.title, 'text-[18px] ml-3')}>Photos & vidéos</h1>
       </header>
 
       <main className="px-5 py-6 space-y-4">
@@ -100,6 +104,7 @@ export default function PhotoUpload() {
               type="button"
               onClick={() => executeIfNotPreview(() => inputRef.current?.click())}
               className={cn(tokens.btn.primary, 'inline-flex w-auto cursor-pointer px-6')}
+              style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
             >
               <Upload size={16} />
               Parcourir
@@ -125,6 +130,7 @@ export default function PhotoUpload() {
               onClick={handleUpload}
               disabled={isUploading || isPreview}
               className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+              style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
             >
               <Upload size={16} />
               {isUploading ? 'Envoi en cours...' : `Envoyer ${files.length} fichier(s)`}

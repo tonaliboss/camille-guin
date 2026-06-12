@@ -13,9 +13,11 @@ interface Props {
   token: string
   role: UserRole
   fontFamily?: string
+  backgroundColor?: string
+  titleColor?: string
 }
 
-export default function AppLayout({ children, token, role, fontFamily }: Props) {
+export default function AppLayout({ children, token, role, fontFamily, backgroundColor, titleColor }: Props) {
   const pathname = usePathname()
   const router = useRouter()
   const { isPreview } = usePreviewMode()
@@ -60,7 +62,11 @@ export default function AppLayout({ children, token, role, fontFamily }: Props) 
     <div className={tokens.layout.page}>
       <div 
         className={tokens.layout.container}
-        style={{ '--font-selected': fontMap[fontFamily ?? 'Lora'] } as React.CSSProperties}
+        style={{
+          '--font-selected': fontMap[fontFamily ?? 'Lora'],
+          '--title-color': titleColor ?? '#3C1F0F',
+          backgroundColor: backgroundColor ?? '#F9F6F2',
+        } as React.CSSProperties}
       >
         <div className="flex-1">
           {children}

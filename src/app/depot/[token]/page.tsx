@@ -17,8 +17,8 @@ export default async function DepotPage({ params }: Props) {
   const settings = await getSettings()
 
   return (
-    <AppLayout role={role} token={token} fontFamily={settings.fontFamily}>
-      <Depot role={role} token={token} settings={settings} />
+    <AppLayout role={role} token={token} fontFamily={settings.fontFamily} backgroundColor={settings.backgroundColor} titleColor={settings.titleColor}>
+        <Depot role={role} token={token} settings={settings} />
     </AppLayout>
   )
 }

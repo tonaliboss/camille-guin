@@ -59,6 +59,10 @@
   body {
     @apply bg-stone-200 text-black selection:bg-black selection:text-white;
   }
+
+  h2, h3, h4 {
+    color: var(--title-color, #3C1F0F);
+  }
 }
 
 /* Classes utilitaires globales qu'on garde pour la galerie */

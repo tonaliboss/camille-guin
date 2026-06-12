@@ -23,6 +23,10 @@ export async function getSettings(): Promise<DepotSettings> {
       menuUrl: null,
       planningUrl: null,
       fontFamily: 'Lora',
+      backgroundColor: '#F9F6F2',
+      bannerHeroColor: '#2C1A0E',
+      footerColor: '#F2EBE0',
+      themeName: 'Feu de bois',
     }
   }
 

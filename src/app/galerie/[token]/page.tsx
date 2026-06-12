@@ -19,7 +19,7 @@ export default async function GaleriePage({ params, searchParams }: Props) {
   const settings = await getSettings()
 
   return (
-    <AppLayout role={role} token={token} fontFamily={settings.fontFamily}>
+    <AppLayout role={role} token={token} fontFamily={settings.fontFamily} backgroundColor={settings.backgroundColor} titleColor={settings.titleColor}>
       <Galerie role={role} token={token} settings={settings} />
     </AppLayout>
   )

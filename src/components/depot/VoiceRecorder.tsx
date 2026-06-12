@@ -4,13 +4,18 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mic, Square, ArrowLeft, Send } from 'lucide-react'
 import { toast } from 'sonner'
+import type { DepotSettings } from '@/types'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
 import { supabase, BUCKET_NAME, FOLDERS } from '@/lib/supabase'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import HiddenToggle from '@/components/ui/HiddenToggle'
 
-export default function VoiceRecorder() {
+interface Props {
+  settings: DepotSettings
+}
+
+export default function VoiceRecorder({ settings }: Props) {
   const router = useRouter()
   const { executeIfNotPreview } = usePreviewMode()
   const [isRecording, setIsRecording] = useState(false)
@@ -86,7 +91,6 @@ export default function VoiceRecorder() {
         <button onClick={() => router.back()} className={tokens.btn.ghost}>
           <ArrowLeft size={20} />
         </button>
-        <h1 className={cn(tokens.text.title, 'text-[18px] ml-3')}>Message vocal</h1>
       </header>
 
       <main className="px-5 py-6">
@@ -133,6 +137,7 @@ export default function VoiceRecorder() {
                     onClick={uploadAudio}
                     disabled={isSending}
                     className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+                    style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
                   >
                     <Send size={16} />
                     {isSending ? 'Envoi...' : 'Envoyer'}

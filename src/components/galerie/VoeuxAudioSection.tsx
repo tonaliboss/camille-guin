@@ -4,12 +4,13 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { Download, EyeOff, Eye, Play, Pause } from 'lucide-react'
 import { getAudioMessages, toggleMediaVisibility } from '@/lib/media'
 import { downloadAllAsZip, downloadFile } from '@/lib/download'
-import type { AudioMessage, UserRole } from '@/types'
+import type { AudioMessage, UserRole, DepotSettings } from '@/types'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
   role: UserRole
+  settings: DepotSettings
 }
 
 interface AudioPlayerState {
@@ -107,7 +108,7 @@ function AudioRow({ audio, index, hidden, role, player, audioRef, onTogglePlay, 
   )
 }
 
-export default function VoeuxAudioSection({ role }: Props) {
+export default function VoeuxAudioSection({ role, settings }: Props) {
   const [audioMessages, setAudioMessages] = useState<AudioMessage[]>([])
   const [hiddenAudio, setHiddenAudio] = useState<AudioMessage[]>([])
   const [loading, setLoading] = useState(true)
@@ -259,6 +260,7 @@ export default function VoeuxAudioSection({ role }: Props) {
         <button
           onClick={() => setShowAllAudio(!showAllAudio)}
           className={cn(tokens.btn.outline, 'mt-4')}
+          style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
         >
           {showAllAudio ? 'Voir moins' : `Voir tout (+${audioMessages.length - INITIAL_AUDIO})`}
         </button>
@@ -301,7 +303,8 @@ export default function VoeuxAudioSection({ role }: Props) {
       {hiddenAudio.length > INITIAL_AUDIO && (
         <button
           onClick={() => setShowAllHiddenAudio(!showAllHiddenAudio)}
-          className={cn(tokens.btn.secondary, 'mt-4')}
+          className={cn(tokens.btn.outline, 'mt-4')}
+          style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
         >
           {showAllHiddenAudio ? 'Voir moins' : `Voir tout (+${hiddenAudio.length - INITIAL_AUDIO})`}
         </button>

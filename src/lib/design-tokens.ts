@@ -11,8 +11,8 @@ export const tokens = {
 
   // ── Layout ──────────────────────────────────────────────────────────────
   layout: {
-    page: 'min-h-screen bg-stone-200 flex justify-center font-sans selection:bg-black selection:text-white',
-    container: 'w-full max-w-md bg-[#FAFAFA] min-h-screen relative flex flex-col shadow-2xl',
+    page: 'min-h-screen bg-stone-100 flex justify-center font-sans selection:bg-black selection:text-white',
+    container: 'w-full max-w-md min-h-screen relative flex flex-col shadow-2xl',
   },
 
   // ── Cards / Surfaces ─────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ export const tokens = {
   // ── Typographie ──────────────────────────────────────────────────────────
   text: {
     title: "italic font-bold text-black leading-tight",
-    cardTitle: "italic font-bold text-[22px] text-black leading-tight",
+    cardTitle: "italic font-bold text-[22px] leading-tight",
     body: "text-[13px] font-normal text-stone-500 leading-relaxed",
     eyebrow: 'font-medium text-[10px] tracking-[0.35em] uppercase text-white/90',
     navLabel: 'text-[7px] font-bold tracking-widest uppercase text-center leading-tight',
@@ -72,7 +72,7 @@ export const tokens = {
 
   section: {
     eyebrow: "font-normal text-[10px] uppercase tracking-[0.2em] text-stone-400",
-    title: "italic font-bold text-[24px] text-black leading-none",
+    title: "italic font-bold text-[24px] leading-none",
     divider: 'w-8 h-[1px] bg-stone-300',
     cardHeader: 'flex items-center gap-3 mb-3',
     cardAccent: 'w-1.5 h-6 rounded-full',

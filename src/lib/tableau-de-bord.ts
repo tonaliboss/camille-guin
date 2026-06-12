@@ -1,36 +1,31 @@
 import type { DepotSettings, FontFamily } from '@/types'
 
-export interface BannerSwatch { label: string; color: string }
-export interface ThemeSwatch { label: string; color: string; buttonColor: string; titleColor: string; buttonTextColor: string }
+export interface BannerSwatch { 
+  label: string; color: string 
+}
 
-export const BANNER_COLORS: BannerSwatch[] = [
-  { label: 'Gris',       color: '#747373' },
-  { label: 'Beige',      color: '#ecded2' },
-  { label: 'Terracotta', color: '#a7523c' },
-  { label: 'Bleu ciel',  color: '#d5e4fa' },
-  { label: 'Bleu',       color: '#1b2f47' },
-  { label: 'Vert sauge', color: '#aeb7a4' },
-  { label: 'Rose',       color: '#db7f8f' },
-  { label: 'Jaune',      color: '#fff5cd' },
-  { label: 'Vert sapin', color: '#4e5941' },
-  { label: 'Marron',     color: '#d9ccbd' },
-  { label: 'Violet',     color: '#c8b5d0' },
-  { label: 'Bordeaux',   color: '#60071d' },
-]
+export interface ThemeSwatch {
+  label: string
+  color: string
+  buttonColor: string
+  titleColor: string
+  buttonTextColor: string
+  backgroundColor: string
+  bannerHeroColor: string
+  footerColor: string
+}
 
 export const THEME_COLORS: ThemeSwatch[] = [
-  { label: 'Original',   color: '#3C1F0F', buttonColor: '#3C1F0F', titleColor: '#3C1F0F', buttonTextColor: '#ffffff' },
-  { label: 'Gris',       color: '#747373', buttonColor: '#747373', titleColor: '#1a1a1a', buttonTextColor: '#ffffff' },
-  { label: 'Beige',      color: '#ecded2', buttonColor: '#ecded2', titleColor: '#ae9c88', buttonTextColor: '#ae9c88' },
-  { label: 'Terracotta', color: '#a7523c', buttonColor: '#a7523c', titleColor: '#5a382a', buttonTextColor: '#ffffff' },
-  { label: 'Bleu',       color: '#1b2f47', buttonColor: '#1b2f47', titleColor: '#1b2f47', buttonTextColor: '#ffffff' },
-  { label: 'Vert sauge', color: '#aeb7a4', buttonColor: '#aeb7a4', titleColor: '#4e5941', buttonTextColor: '#ffffff' },
-  { label: 'Rose',       color: '#fad7dd', buttonColor: '#db7f8f', titleColor: '#995964', buttonTextColor: '#fad7dd' },
-  { label: 'Jaune',      color: '#fff5cd', buttonColor: '#fff5cd', titleColor: '#2d2d2d', buttonTextColor: '#6b6b6b' },
-  { label: 'Vert sapin', color: '#4e5941', buttonColor: '#b2a791', titleColor: '#4e5941', buttonTextColor: '#ffffff' },
-  { label: 'Marron',     color: '#624838', buttonColor: '#624838', titleColor: '#624838', buttonTextColor: '#ffffff' },
-  { label: 'Violet',     color: '#c8b5d0', buttonColor: '#c8b5d0', titleColor: '#8C7E91', buttonTextColor: '#7a5f96' },
-  { label: 'Bordeaux',   color: '#60071d', buttonColor: '#ecded2', titleColor: '#60071d', buttonTextColor: '#60071d' },
+  { label: 'Feu de bois',     color: '#3C1F0F', buttonColor: '#3C1F0F', titleColor: '#5C3D22', buttonTextColor: '#ffffff', backgroundColor: '#F9F6F2', bannerHeroColor: '#2C1A0E', footerColor: '#F2EBE0' },
+  { label: 'Plume',           color: '#3A3935', buttonColor: '#3A3935', titleColor: '#5F5E5A', buttonTextColor: '#F4F3F1', backgroundColor: '#F4F3F1', bannerHeroColor: '#3A3935', footerColor: '#E8E7E3' },
+  { label: 'Lin d\'été',      color: '#C4B49A', buttonColor: '#C4B49A', titleColor: '#9A8870', buttonTextColor: '#ffffff', backgroundColor: '#FAFAF8', bannerHeroColor: '#C4B49A', footerColor: '#F2EDE5' },
+  { label: 'Soleil couchant', color: '#a7523c', buttonColor: '#a7523c', titleColor: '#6E3324', buttonTextColor: '#FAF3F0', backgroundColor: '#FAF3F0', bannerHeroColor: '#a7523c', footerColor: '#EEDDD6' },
+  { label: 'Minuit',          color: '#1b2f47', buttonColor: '#1b2f47', titleColor: '#3D6E8A', buttonTextColor: '#F5F4F2', backgroundColor: '#F5F4F2', bannerHeroColor: '#1b2f47', footerColor: '#E4EAF0' },
+  { label: 'Jardin secret',   color: '#A8B49E', buttonColor: '#A8B49E', titleColor: '#5C6E52', buttonTextColor: '#ffffff', backgroundColor: '#F6F8F4', bannerHeroColor: '#A8B49E', footerColor: '#E0E8D8' },
+  { label: 'Pivoine',         color: '#E8A8B4', buttonColor: '#E8A8B4', titleColor: '#A05870', buttonTextColor: '#ffffff', backgroundColor: '#F7F6F4', bannerHeroColor: '#E8A8B4', footerColor: '#FBF0F2' },
+  { label: 'Champêtre',       color: '#4e5941', buttonColor: '#4e5941', titleColor: '#b2a791', buttonTextColor: '#ffffff', backgroundColor: '#F7F5F0', bannerHeroColor: '#4e5941', footerColor: '#EAE5D8' },
+  { label: 'Poudre de fée',   color: '#C2BAD4', buttonColor: '#C2BAD4', titleColor: '#7E7496', buttonTextColor: '#ffffff', backgroundColor: '#FAF9F6', bannerHeroColor: '#C2BAD4', footerColor: '#F4F0FA' },
+  { label: 'Passion',         color: '#5C0A1F', buttonColor: '#5C0A1F', titleColor: '#4A0818', buttonTextColor: '#EDE0D6', backgroundColor: '#F8F3F0', bannerHeroColor: '#5C0A1F', footerColor: '#EDE0D6' },
 ]
 
 export const FONTS: { label: string; value: FontFamily; preview: string }[] = [

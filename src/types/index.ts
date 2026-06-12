@@ -52,4 +52,8 @@ export interface DepotSettings {
   menuUrl: string | null
   planningUrl: string | null
   fontFamily: FontFamily
+  backgroundColor: string
+  bannerHeroColor: string
+  footerColor: string
+  themeName: string
 }

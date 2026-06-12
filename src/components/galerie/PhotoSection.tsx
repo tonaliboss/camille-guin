@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Download, X, EyeOff, Eye } from 'lucide-react'
-import type { MediaItem, UserRole } from '@/types'
+import type { MediaItem, UserRole, DepotSettings } from '@/types'
 import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
 import { downloadAllAsZip, downloadFile } from '@/lib/download'
 import { tokens } from '@/lib/design-tokens'
@@ -10,9 +10,10 @@ import { cn } from '@/components/shadcn/utils'
 
 interface Props {
   role: UserRole
+  settings: DepotSettings
 }
 
-export default function PhotoSection({ role }: Props) {
+export default function PhotoSection({ role, settings }: Props) {
   const [media, setMedia] = useState<MediaItem[]>([])
   const [hiddenMedia, setHiddenMedia] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -133,6 +134,7 @@ export default function PhotoSection({ role }: Props) {
           <button
             onClick={() => setShowAllMedia(!showAllMedia)}
             className={cn(tokens.btn.outline, 'mt-4')}
+            style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
           >
             {showAllMedia ? 'Voir moins' : `Voir tout (+${media.length - INITIAL_PHOTOS})`}
           </button>
@@ -174,6 +176,7 @@ export default function PhotoSection({ role }: Props) {
           <button
             onClick={() => setShowAllHidden(!showAllHidden)}
             className={cn(tokens.btn.outline, 'mt-4')}
+            style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
           >
             {showAllHidden ? 'Voir moins' : `Voir tout (+${hiddenMedia.length - INITIAL_PHOTOS})`}
           </button>

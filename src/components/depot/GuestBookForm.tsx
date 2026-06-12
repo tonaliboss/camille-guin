@@ -5,12 +5,17 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePreviewMode } from '@/hooks/usePreviewMode'
+import type { DepotSettings } from '@/types'
 import { saveMessage } from '@/lib/media'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 import HiddenToggle from '@/components/ui/HiddenToggle'
 
-export default function GuestbookForm() {
+interface Props {
+  settings: DepotSettings
+}
+
+export default function GuestbookForm({ settings }: Props) {
   const router = useRouter()
   const { executeIfNotPreview } = usePreviewMode()
   const [message, setMessage] = useState('')
@@ -44,7 +49,6 @@ export default function GuestbookForm() {
         <button onClick={() => router.back()} className={tokens.btn.ghost}>
           <ArrowLeft size={20} />
         </button>
-        <h1 className={cn(tokens.text.title, 'text-[18px] ml-3')}>Livre d'or</h1>
       </header>
 
       <main className="px-5 py-6">
@@ -84,6 +88,7 @@ export default function GuestbookForm() {
               type="submit"
               disabled={isSending}
               className={cn(tokens.btn.primary, 'mt-2 disabled:opacity-50')}
+              style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
             >
               <Send size={16} />
               {isSending ? 'Envoi en cours...' : 'Envoyer le message'}
