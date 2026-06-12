@@ -3,14 +3,16 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, ArrowLeft } from 'lucide-react'
+import type { DepotSettings } from '@/types'
 import { tokens } from '@/lib/design-tokens'
 import { cn } from '@/components/shadcn/utils'
 
 interface Props {
   from?: string
+  settings: DepotSettings
 }
 
-export default function Connexion({ from }: Props) {
+export default function Connexion({ from, settings }: Props) {
   const router = useRouter()
   const [code, setCode] = useState('')
   const [error, setError] = useState(false)
@@ -61,7 +63,7 @@ export default function Connexion({ from }: Props) {
               <Lock strokeWidth={1.5} className="w-6 h-6" />
             </div>
 
-            <h2 className={cn(tokens.text.cardTitle, 'text-center mb-2')}>
+            <h2 className={cn(tokens.text.cardTitle, 'text-center mb-2')} style={{ color: settings.titleColor }}>
               Code d'accès admin
             </h2>
             <p className={cn(tokens.text.body, 'text-center mb-6')}>
@@ -89,6 +91,7 @@ export default function Connexion({ from }: Props) {
                 type="submit"
                 disabled={isLoading || code.length === 0}
                 className={cn(tokens.btn.primary, 'disabled:opacity-50')}
+                style={{ backgroundColor: settings.themeColor, color: settings.buttonTextColor }}
               >
                 {isLoading ? 'Vérification...' : 'Accéder'}
               </button>

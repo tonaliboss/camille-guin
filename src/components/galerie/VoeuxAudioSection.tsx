@@ -180,8 +180,10 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
     loadAudio()
   }, [loadAudio])
 
-  const downloadAudio = useCallback((audio: AudioMessage) => {
-    downloadFile(audio.url, audio.name)
+  const downloadAudio = useCallback((audio: AudioMessage, index: number) => {
+    const ext = audio.name.split('.').pop()
+    const baseName = audio.metadata?.author?.trim() ? `${audio.metadata.author.trim()}-${index + 1}` : `voeux-audio-${index + 1}`
+    downloadFile(audio.url, `${baseName}.${ext}`)
   }, [])
 
   const downloadAllAudio = async () => {
@@ -189,7 +191,29 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
     setDownloading(true)
     setDownloadProgress(0)
     try {
-      await downloadAllAsZip(audioMessages, 'audio', 'audio.zip', setDownloadProgress)
+      const items = audioMessages.map((audio, index) => {
+        const ext = audio.name.split('.').pop()
+        const baseName = audio.metadata?.author?.trim() ? `${audio.metadata.author.trim()}-${index + 1}` : `voeux-audio-${index + 1}`
+        return { ...audio, name: `${baseName}.${ext}` }
+      })
+      await downloadAllAsZip(items, 'audio', 'audio.zip', setDownloadProgress)
+    } finally {
+      setDownloading(false)
+      setDownloadProgress(0)
+    }
+  }
+
+  const downloadAllHiddenAudio = async () => {
+    if (!hiddenAudio.length || downloading) return
+    setDownloading(true)
+    setDownloadProgress(0)
+    try {
+      const items = hiddenAudio.map((audio, index) => {
+        const ext = audio.name.split('.').pop()
+        const baseName = audio.metadata?.author?.trim() ? `${audio.metadata.author.trim()}-${index + 1}` : `voeux-audio-${index + 1}`
+        return { ...audio, name: `${baseName}.${ext}` }
+      })
+      await downloadAllAsZip(items, 'audio-masque', 'audio-masque.zip', setDownloadProgress)
     } finally {
       setDownloading(false)
       setDownloadProgress(0)
@@ -250,7 +274,7 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
               onEnded={() => handleEnded(audio.id)}
               onHide={() => hideAudio(audio)}
               onUnhide={() => unhideAudio(audio)}
-              onDownload={() => downloadAudio(audio)}
+              onDownload={() => downloadAudio(audio, index)}
             />
           ))}
         </div>
@@ -278,6 +302,21 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
               <p className="text-[11px] text-stone-400 mt-2">{hiddenAudio.length} élément{hiddenAudio.length > 1 ? 's' : ''}</p>
             )}
           </div>
+
+          <div className="flex flex-col items-center gap-2 mb-6">
+            <button onClick={downloadAllHiddenAudio} disabled={downloading} className="p-1 hover:bg-stone-100 rounded-full transition-colors disabled:opacity-50">
+              <Download className="w-6 h-6 text-stone-300" />
+            </button>
+            {downloading && (
+              <div className="w-48">
+                <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-stone-400 transition-all duration-300" style={{ width: `${downloadProgress}%` }} />
+                </div>
+                <p className="text-xs text-stone-400 text-center mt-1">{Math.round(downloadProgress)}%</p>
+              </div>
+            )}
+          </div>
+
           <div className="border-t border-stone-200/60">
             {hiddenAudio.slice(0, showAllHiddenAudio ? undefined : INITIAL_AUDIO).map((audio, index) => (
               <AudioRow
@@ -293,7 +332,7 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
                 onEnded={() => handleEnded(audio.id)}
                 onHide={() => hideAudio(audio)}
                 onUnhide={() => unhideAudio(audio)}
-                onDownload={() => downloadAudio(audio)}
+                onDownload={() => downloadAudio(audio, index)}
               />
             ))}
           </div>

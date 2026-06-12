@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getRole } from '@/lib/auth'
+import { getSettings } from '@/lib/settings'
 import Connexion from '@/components/connexion/Connexion'
 
 interface Props {
@@ -11,5 +12,7 @@ export default async function ConnexionPage({ searchParams }: Props) {
   if (role === 'admin') redirect('/tableau-de-bord')
 
   const { from } = await searchParams
-  return <Connexion from={from} />
+  const settings = await getSettings()
+
+  return <Connexion from={from} settings={settings} />
 }
