@@ -26,21 +26,21 @@ export const tokens = {
 
   // ── Boutons ──────────────────────────────────────────────────────────────
   btn: {
-    primary: 'w-full py-4 px-6 bg-black text-white rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors shadow-button active:scale-[0.98]',
-    secondary: 'w-full py-4 px-6 bg-stone-50 text-black border border-stone-100 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-stone-100 hover:border-stone-200 transition-all active:scale-[0.98]',
-    ghost: 'flex items-center gap-2 text-stone-400 hover:text-black transition-colors',
-    sm: 'py-2.5 px-3 rounded-full text-[10px] font-semibold tracking-wide flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all',
-    outline: 'w-full py-3 px-4 rounded-full text-[12px] font-semibold tracking-wide border transition-all active:scale-[0.98] flex items-center justify-center gap-2',
+    primary: "w-full py-4 px-6 bg-black text-white rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors shadow-button active:scale-[0.98] font-['Inter']",
+    secondary: "w-full py-4 px-6 bg-stone-50 text-black border border-stone-100 rounded-full text-[13px] font-semibold tracking-wide flex items-center justify-center gap-2 hover:bg-stone-100 hover:border-stone-200 transition-all active:scale-[0.98] font-['Inter']",
+    ghost: "flex items-center gap-2 text-stone-400 hover:text-black transition-colors font-['Inter']",
+    sm: "py-2.5 px-3 rounded-full text-[10px] font-semibold tracking-wide flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all font-['Inter']",
+    outline: "w-full py-3 px-4 rounded-full text-[12px] font-semibold tracking-wide border transition-all active:scale-[0.98] flex items-center justify-center gap-2 font-['Inter']",
   },
 
   // ── Typographie ──────────────────────────────────────────────────────────
   text: {
     title: "italic font-bold text-black leading-tight",
     cardTitle: "italic font-bold text-[22px] leading-tight",
-    body: "text-[13px] font-normal text-stone-500 leading-relaxed",
-    eyebrow: 'font-medium text-[10px] tracking-[0.35em] uppercase text-white/90',
-    navLabel: 'text-[7px] font-bold tracking-widest uppercase text-center leading-tight',
-    label: 'font-bold tracking-widest uppercase text-stone-400',
+    body: "text-[13px] font-normal text-stone-500 leading-relaxed font-['Inter']",
+    eyebrow: 'font-medium text-[10px] tracking-[0.35em] uppercase text-white/90 font-[\'Inter\']',
+    navLabel: 'text-[7px] font-bold tracking-widest uppercase text-center leading-tight font-[\'Inter\']',
+    label: 'font-bold tracking-widest uppercase text-stone-400 font-[\'Inter\']',
   },
 
   // ── Conteneurs d'icônes ──────────────────────────────────────────────────
@@ -71,8 +71,8 @@ export const tokens = {
   },
 
   section: {
-    eyebrow: "font-normal text-[10px] uppercase tracking-[0.2em] text-stone-400",
-    title: "italic font-bold text-[24px] leading-none",
+    eyebrow: "font-normal text-[10px] uppercase tracking-[0.2em] text-stone-400 font-['Inter']",
+    title: "italic font-bold text-[24px] leading-none", // hérite de h2/h3 → police thème
     divider: 'w-8 h-[1px] bg-stone-300',
     cardHeader: 'flex items-center gap-3 mb-3',
     cardAccent: 'w-1.5 h-6 rounded-full',

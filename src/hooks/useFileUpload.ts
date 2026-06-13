@@ -12,6 +12,34 @@ export interface UploadProgress {
   error?: string
 }
 
+const uploadWithProgress = (
+  bucketPath: string,
+  file: File,
+  cacheControl: string,
+  onProgress: (percent: number) => void
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/${BUCKET_NAME}/${bucketPath}`
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', url)
+    xhr.setRequestHeader('Authorization', `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.setRequestHeader('cache-control', cacheControl)
+    xhr.setRequestHeader('x-upsert', 'false')
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress((e.loaded / e.total) * 100)
+    }
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve()
+      else reject(new Error(`Upload failed: ${xhr.status} ${xhr.responseText}`))
+    }
+    xhr.onerror = () => reject(new Error('Upload failed'))
+    xhr.send(file)
+  })
+}
+
 export const useFileUpload = (folderName: string, hidden: boolean = false) => {
   const [uploadProgress, setUploadProgress] = useState<{ [key: string]: UploadProgress }>({})
   const [isUploading, setIsUploading] = useState(false)
@@ -32,26 +60,20 @@ export const useFileUpload = (folderName: string, hidden: boolean = false) => {
     })
 
     try {
-      updateProgress(file.name, { status: 'uploading', progress: 10 })
+      updateProgress(file.name, { status: 'uploading', progress: 0 })
 
       let processedFile = file
       if (isHeic(file)) {
         processedFile = await convertHeicToJpeg(file)
       }
 
-      updateProgress(file.name, { progress: 30 })
-
       const fileExt = processedFile.name.split('.').pop()?.toLowerCase() || 'unknown'
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
       const bucketPath = `${folderName}/${fileName}`
 
-      updateProgress(file.name, { progress: 50 })
-
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(bucketPath, processedFile)
-
-      if (uploadError) throw uploadError
+      await uploadWithProgress(bucketPath, processedFile, '31536000', (percent) => {
+        updateProgress(file.name, { progress: Math.round(percent) })
+      })
 
       const type = processedFile.type.startsWith('audio/')
         ? 'audio'
@@ -88,12 +110,23 @@ export const useFileUpload = (folderName: string, hidden: boolean = false) => {
     let successCount = 0
     let failedCount = 0
 
-    const CONCURRENT_UPLOADS = 3
-    for (let i = 0; i < files.length; i += CONCURRENT_UPLOADS) {
-      const chunk = files.slice(i, i + CONCURRENT_UPLOADS)
-      const results = await Promise.all(chunk.map(uploadFile))
-      results.forEach(success => success ? successCount++ : failedCount++)
+    const photos = files.filter(f => !f.type.startsWith('video/'))
+    const videos = files.filter(f => f.type.startsWith('video/'))
+
+    const runBatch = async (batch: File[], concurrency: number) => {
+      for (let i = 0; i < batch.length; i += concurrency) {
+        const chunk = batch.slice(i, i + concurrency)
+        const results = await Promise.all(chunk.map(uploadFile))
+        results.forEach(success => success ? successCount++ : failedCount++)
+      }
     }
+
+    const CONCURRENT_PHOTO_UPLOADS = 5
+    const CONCURRENT_VIDEO_UPLOADS = 2
+    await Promise.all([
+      runBatch(photos, CONCURRENT_PHOTO_UPLOADS),
+      runBatch(videos, CONCURRENT_VIDEO_UPLOADS),
+    ])
 
     setIsUploading(false)
     return { success: successCount, failed: failedCount }

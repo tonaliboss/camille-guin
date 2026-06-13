@@ -48,13 +48,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  *, *::before, *::after {
-      font-family: var(--font-selected, var(--font-lora));
-    }
+  body, p, span, div, button, input, textarea, a, li {
+    font-family: 'Inter', sans-serif;
+  }
 
-    span[data-font-preview] {
-      font-family: var(--preview-font) !important;
-    }
+  h1, h2, h3, h4, .font-themed {
+    font-family: var(--font-selected, var(--font-lora));
+  }
+
+  span[data-font-preview] {
+    font-family: var(--preview-font) !important;
+  }
 
   body {
     @apply bg-stone-200 text-black selection:bg-black selection:text-white;
@@ -100,4 +104,11 @@
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+}
+
+.dashboard-fixed-font h1,
+.dashboard-fixed-font h2,
+.dashboard-fixed-font h3,
+.dashboard-fixed-font h4 {
+  font-family: 'Inter', sans-serif !important;
 }

@@ -61,7 +61,7 @@ export default function PhotoUpload() {
     resetProgress()
     const { success, failed } = await uploadFiles(files)
     if (success > 0) {
-      toast.success(`${success} fichier(s) envoyé(s) avec succès !${failed > 0 ? ` (${failed} échec(s))` : ''}`)
+      toast.success(`${success} fichier(s) envoyé(s) avec succès !${hidden ? ' (en masqué)' : ''}${failed > 0 ? ` (${failed} échec(s))` : ''}`)
       router.back()
     } else {
       setError("Aucun fichier n'a pu être envoyé")

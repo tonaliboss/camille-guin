@@ -52,7 +52,7 @@ export default function Navigation({ videoUrl }: Props) {
           <button
             key={section.id}
             onClick={() => scrollToSection(section.id)}
-            className={`relative flex flex-col items-center text-[12px] tracking-[0.05em] leading-4 transition-colors duration-300 ${
+            className={`relative flex flex-col items-center text-[12px] tracking-[0.05em] leading-4 transition-colors duration-300 font-themed ${
               activeSection === section.id ? 'text-black' : 'text-stone-400 hover:text-stone-600'
             }`}
           >

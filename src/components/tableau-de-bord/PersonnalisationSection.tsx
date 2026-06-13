@@ -3,20 +3,22 @@
 import { useRef, useState } from 'react'
 import { Upload, Check, Type, Palette, ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import type { DepotSettings, FontFamily } from '@/types'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
 import { THEME_COLORS, FONTS } from '@/lib/tableau-de-bord'
 import { tokens, fontMap } from '@/lib/design-tokens'
 import { hasFeature } from '@/lib/plan'
 import { cn } from '@/components/shadcn/utils'
-import type { DepotSettings, FontFamily } from '@/types'
+import PreviewSection from '@/components/tableau-de-bord/PreviewSection'
 
 interface Props {
   settings: DepotSettings
   onSave: (patch: Partial<DepotSettings>) => void
   saving: boolean
+  previewKey: number
 }
 
-export default function PersonnalisationSection({ settings, onSave, saving }: Props) {
+export default function PersonnalisationSection({ settings, onSave, saving, previewKey }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [localBannerType, setLocalBannerType] = useState(settings.bannerType)
@@ -207,8 +209,12 @@ export default function PersonnalisationSection({ settings, onSave, saving }: Pr
         className={cn(tokens.btn.primary, 'disabled:opacity-50')}
         style={{ backgroundColor: '#525252', color: '#ffffff' }}
       >
-        {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+        {saving ? 'Enregistrement en cours...' : 'Enregistrer les modifications'}
       </button>
+
+      <div className="mt-6">
+        <PreviewSection previewKey={previewKey} />
+      </div>
     </div>
   )
 }

@@ -45,7 +45,11 @@ export default function GalerieSection({ galerieUrl }: Props) {
           <span>Copier</span>
         </div>
       </button>
-      <button onClick={handleShare} className={cn(tokens.btn.secondary, 'justify-center mt-2')}>
+      <button
+        onClick={handleShare}
+        className={cn(tokens.btn.secondary, 'justify-center mt-2')}
+        style={{ backgroundColor: '#4E5941', color: '#ffffff', borderColor: '#4E5941' }}
+      >
         <Share2 className="w-4 h-4" />
         <span>Partager</span>
       </button>

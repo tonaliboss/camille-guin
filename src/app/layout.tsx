@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className={`${lora.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} ${ebGaramond.variable}`}>
       <body>
         {children}
-        <Toaster position="top-center" />
+        <Toaster duration={5000} position="top-center" />
       </body>
     </html>
   )

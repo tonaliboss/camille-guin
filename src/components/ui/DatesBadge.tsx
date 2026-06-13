@@ -20,8 +20,8 @@ export default function DatesBadge() {
         <div className="flex-1 flex items-center gap-2 px-2">
           <HardDrive strokeWidth={1.5} className="w-3.5 h-3.5 text-stone-400 shrink-0" />
           <div className="flex flex-col">
-            <p className="text-[8px] font-bold tracking-widest uppercase text-stone-400 mb-0.5">Stockage</p>
-            <p className="text-[10px] font-medium text-stone-500 leading-none">
+            <p className="text-[8px] font-bold tracking-widest uppercase text-stone-400 mb-1">Stockage</p>
+            <p className="text-[10px] font-medium text-stone-500 leading-normal">
               jusqu'au {getStorageExpiryDate()}
             </p>
           </div>
@@ -29,9 +29,9 @@ export default function DatesBadge() {
         <div className="flex-1 flex items-center gap-2 px-2 pl-3">
           <Film strokeWidth={1.5} className="w-3.5 h-3.5 text-stone-400 shrink-0" />
           <div className="flex flex-col">
-            <p className="text-[8px] font-bold tracking-widest uppercase text-stone-400 mb-0.5">Vidéo montée</p>
-            <p className="text-[10px] font-medium text-stone-500 leading-none">
-              le {getVideoDeliveryDate()}
+            <p className="text-[8px] font-bold tracking-widest uppercase text-stone-400 mb-1">Vidéo montée</p>
+            <p className="text-[10px] font-medium text-stone-500 leading-normal">
+              disponible le {getVideoDeliveryDate()}
             </p>
           </div>
         </div>

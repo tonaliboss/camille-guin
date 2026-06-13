@@ -15,7 +15,7 @@ export default function PreviewSection({ previewKey }: Props) {
   const previewRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className={cn(tokens.card.base, tokens.card.padding)}>
+    <div className={cn(tokens.card.alt, 'p-4 bg-white')}>
       <button
         onClick={() => {
           setPreviewOpen(prev => !prev)
@@ -25,7 +25,7 @@ export default function PreviewSection({ previewKey }: Props) {
       >
         <div className="flex items-center gap-2">
           <Eye className="w-4 h-4 text-stone-400" />
-          <h3 className="text-[13px] font-semibold text-black">Prévisualisation</h3>
+          <h3 className="text-[13px] font-semibold text-black font-['Inter']">Prévisualisation</h3>
         </div>
         {previewOpen ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
       </button>

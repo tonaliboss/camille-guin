@@ -1,12 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, ExternalLink, X } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Star, ExternalLink, X, Share2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/components/shadcn/utils'
 import { tokens } from '@/lib/design-tokens'
 import { toast } from 'sonner'
-import { Share2 } from 'lucide-react'
 import type { DepotSettings } from '@/types'
 
 interface Props {
@@ -20,6 +19,13 @@ export default function CamoriaFooter({ settings }: Props) {
   const [comment, setComment] = useState('')
   const [author, setAuthor] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const reviewRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (showReview) {
+      setTimeout(() => reviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)
+    }
+  }, [showReview])
 
   const handleSubmit = async () => {
     if (!rating) { toast.warning('Veuillez sélectionner une note'); return }
@@ -46,7 +52,7 @@ export default function CamoriaFooter({ settings }: Props) {
   const handleShare = async () => {
     const url = process.env.NEXT_PUBLIC_CAMORIA_URL ?? ''
     const text = `Salut ! Je suis à un événement en ce moment et ils utilisent ce service pour récupérer les photos, vidéos & messages des invités. Je trouve ça vraiment sympa, je me suis dit que ça pourrait t'intéresser ☺️ :`
-    
+
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Camoria Memories', text, url })
@@ -66,7 +72,7 @@ export default function CamoriaFooter({ settings }: Props) {
         className={cn(tokens.card.subtle, 'border-0')}
         style={{ backgroundColor: settings.footerColor ?? '#F2EBE0' }}
       >
-        <h2 className="italic font-bold text-[18px] mb-2 leading-tight">Vous avez aimé l'expérience ?</h2>
+        <h2 className="italic font-bold text-[18px] mb-2 leading-tight font-['Inter']">Vous avez aimé l'expérience ?</h2>
         <p className={cn(tokens.text.body, 'mb-4 max-w-[240px] text-[12px]')}>
           Offrez ce même niveau d'excellence pour votre prochain événement.
         </p>
@@ -74,6 +80,7 @@ export default function CamoriaFooter({ settings }: Props) {
         <AnimatePresence>
           {showReview && (
             <motion.div
+              ref={reviewRef}
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -100,7 +107,7 @@ export default function CamoriaFooter({ settings }: Props) {
                           'w-8 h-8 transition-colors',
                           (hoverRating || rating) >= star
                             ? 'text-amber-400 fill-amber-400'
-                            : 'text-stone-200'
+                            : 'text-stone-400'
                         )}
                       />
                     </button>

@@ -70,7 +70,7 @@ export default function Depot({ token }: Props) {
             >
               {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
-              <span className="text-white/90">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
+              <span className="text-white/90 font-themed">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
             </motion.h1>
           </div>
         </div> 
@@ -84,7 +84,7 @@ export default function Depot({ token }: Props) {
       >
         <div className="flex items-center gap-3 mb-4" style={{ color: settings.titleColor }}>
           <Calendar strokeWidth={1.5} className="w-6 h-6 text-black" />
-          <span className="italic font-bold text-[22px]">
+          <span className="italic font-bold text-[22px] font-themed">
             {formatDate(WEDDING_DATE)}
           </span>
         </div>

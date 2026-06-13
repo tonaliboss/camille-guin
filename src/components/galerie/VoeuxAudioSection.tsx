@@ -64,7 +64,7 @@ function AudioRow({ audio, index, hidden, role, player, audioRef, onTogglePlay, 
 
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-baseline mb-3">
-          <span className="italic font-bold text-[18px] truncate">
+          <span className="italic font-bold text-[18px] truncate font-themed">
             {audio.metadata?.author ?? `Vœux audio ${index + 1}`}
           </span>
           <span className="text-[10px] font-medium tracking-widest text-stone-400 ml-2 shrink-0">
@@ -295,7 +295,7 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
             <span className={tokens.section.eyebrow}>Contenu masqué</span>
             <div className="flex items-center gap-4 mt-2">
               <div className={tokens.section.divider} />
-              <h3 className={tokens.section.title}>Messages masqués</h3>
+              <h3 className={tokens.section.title}>Vocaux masqués</h3>
               <div className={tokens.section.divider} />
             </div>
             {hiddenAudio.length > 0 && (

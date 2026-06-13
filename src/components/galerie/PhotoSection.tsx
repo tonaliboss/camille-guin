@@ -116,9 +116,9 @@ export default function PhotoSection({ role, settings }: Props) {
                 onClick={() => { setLightboxList('public'); setLightboxIndex(index) }}
               >
                 {item.type === 'image' ? (
-                  <img src={item.url} alt="" className="w-full hover:scale-105 transition-transform duration-700" />
+                  <img src={item.url} alt="" className="w-full hover:scale-105 transition-transform duration-700" loading="lazy" />
                 ) : (
-                  <video src={item.url} className="w-full" controls />
+                  <video src={item.url} className="w-full" controls preload="metadata" />
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
               </div>
@@ -176,9 +176,9 @@ export default function PhotoSection({ role, settings }: Props) {
                   onClick={() => { setLightboxList('hidden'); setLightboxIndex(index) }}
                 >
                   {item.type === 'image' ? (
-                    <img src={item.url} alt="" className="w-full" />
+                    <img src={item.url} alt="" className="w-full" loading="lazy" />
                   ) : (
-                    <video src={item.url} className="w-full" controls />
+                    <video src={item.url} className="w-full" controls preload="metadata" />
                   )}
                 </div>
               ))}

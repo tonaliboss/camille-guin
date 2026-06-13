@@ -44,7 +44,7 @@ export default function Galerie({ role, token, settings }: Props) {
             >
               {process.env.NEXT_PUBLIC_BRIDE_NAME}
               <div className="w-16 h-[1px] bg-white/50 mx-auto my-3" />
-              <span className="text-white/90">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
+              <span className="text-white/90 font-themed">{process.env.NEXT_PUBLIC_GROOM_NAME}</span>
             </motion.h1>
           </div>
         </div>

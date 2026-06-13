@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { tokens } from '@/lib/design-tokens'
@@ -9,6 +9,13 @@ import { cn } from '@/components/shadcn/utils'
 export default function LogoutSection() {
   const router = useRouter()
   const [showConfirm, setShowConfirm] = useState(false)
+  const confirmRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (showConfirm) {
+      setTimeout(() => confirmRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50)
+    }
+  }, [showConfirm])
 
   const handleLogout = async (redirectTo: 'depot' | 'galerie') => {
     await fetch('/api/auth', { method: 'DELETE' })
@@ -31,7 +38,7 @@ export default function LogoutSection() {
   }
 
   return (
-    <div className={cn(tokens.card.base, tokens.card.padding, 'flex flex-col gap-3')}>
+    <div ref={confirmRef} className={cn(tokens.card.base, tokens.card.padding, 'flex flex-col gap-3')}>
       <p className={cn(tokens.text.body, 'text-center')}>Où souhaitez-vous être redirigé ?</p>
       <button onClick={() => handleLogout('depot')} className={tokens.btn.secondary}>
         Plateforme de dépôt

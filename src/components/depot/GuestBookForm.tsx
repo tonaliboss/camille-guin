@@ -30,7 +30,7 @@ export default function GuestbookForm() {
       setIsSending(true)
       try {
         await saveMessage(message.trim(), author.trim(), hidden)
-        toast.success('Votre message a été enregistré !')
+        toast.success(`Votre message a été enregistré !${hidden ? ' (en masqué)' : ''}`)
         router.back()
       } catch {
         toast.error("Une erreur est survenue lors de l'envoi.")

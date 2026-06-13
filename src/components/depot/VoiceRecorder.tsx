@@ -78,7 +78,7 @@ export default function VoiceRecorder() {
         }),
       })
       if (!res.ok) throw new Error('Erreur BDD')
-      toast.success('Message vocal envoyé !')
+      toast.success(`Message vocal envoyé !${hidden ? ' (en masqué)' : ''}`)
       router.back()
     } catch {
       toast.error('Erreur lors de l\'envoi.')

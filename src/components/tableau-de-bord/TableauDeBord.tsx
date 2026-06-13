@@ -14,7 +14,6 @@ import CamoriaFooter from '@/components/ui/CamoriaFooter'
 import DepotSection from '@/components/tableau-de-bord/DepotSection'
 import GalerieSection from '@/components/tableau-de-bord/GalerieSection'
 import PersonnalisationSection from '@/components/tableau-de-bord/PersonnalisationSection'
-import PreviewSection from '@/components/tableau-de-bord/PreviewSection'
 import LogoutSection from '@/components/tableau-de-bord/LogoutSection'
 
 interface Props {
@@ -55,13 +54,13 @@ export default function TableauDeBord({ settings }: Props) {
   }
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 dashboard-fixed-font">
       <header className="pt-8 pb-8 px-5 bg-[#FAFAFA] flex flex-col items-center gap-6">
         <LogoPill variant="black" />
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={cn(tokens.text.title, 'text-[36px] text-center')}
+          className={cn(tokens.text.title, 'text-[36px] text-center font-[\'Inter\']')}
         >
           Tableau <br /><span style={{ color: '#4a5443' }}>de bord</span>
         </motion.h1>
@@ -81,11 +80,7 @@ export default function TableauDeBord({ settings }: Props) {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}>
-          <PersonnalisationSection settings={settings} onSave={handleSave} saving={saving} />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}>
-          <PreviewSection previewKey={previewKey} />
+          <PersonnalisationSection settings={settings} onSave={handleSave} saving={saving} previewKey={previewKey} />
         </motion.div>
 
         <div className="[&>footer]:px-0 [&>footer]:py-0 [&>footer]:mt-0">
