@@ -26,13 +26,6 @@ export default function AppLayout({ children, token, role, fontFamily, backgroun
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [pathname])
 
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--font-selected',
-      fontMap[fontFamily ?? 'Lora']
-    )
-  }, [fontFamily])
-
   const isDepot = pathname === `/depot/${token}` || pathname.startsWith(`/depot/${token}/`) && !pathname.includes('galerie')
   const isGalerie = pathname.startsWith(`/galerie/${token}`)
   const isProfil = pathname.includes('profil') || pathname.includes('personnaliser')

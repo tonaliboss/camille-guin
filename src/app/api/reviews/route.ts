@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   const { rating, comment, author } = await req.json()
   if (!rating || rating < 1 || rating > 5) {

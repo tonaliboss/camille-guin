@@ -60,9 +60,9 @@ export default function TableauDeBord({ settings }: Props) {
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={cn(tokens.text.title, 'text-[36px] text-center font-[\'Inter\']')}
+          className={cn(tokens.text.title, 'text-[36px] text-center font-lora-italic')}
         >
-          Tableau <br /><span style={{ color: '#4a5443' }}>de bord</span>
+          Tableau <br /><span className="font-lora-italic" style={{ color: '#4a5443' }}>de bord</span>
         </motion.h1>
       </header>
 

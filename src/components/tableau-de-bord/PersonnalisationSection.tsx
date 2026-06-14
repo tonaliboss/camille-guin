@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Upload, Check, Type, Palette, ImageIcon } from 'lucide-react'
+import { Upload, Check, PenLine, Type, Palette, ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import type { DepotSettings, FontFamily } from '@/types'
 import { supabase, BUCKET_NAME } from '@/lib/supabase'
@@ -85,13 +85,13 @@ export default function PersonnalisationSection({ settings, onSave, saving, prev
     <div className="bg-[#F0F0F0] border border-[#E5E5E5] rounded-[32px] p-7">
       <div className={tokens.section.cardHeader}>
         <div className={cn(tokens.section.cardAccent, 'bg-stone-300')} />
-        <h2 className="italic font-bold text-[22px] leading-tight" style={{ color: '#525252' }}>Personnalisation</h2>
+        <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941] font-lora-italic')}>Personnalisation</h2>
       </div>
 
       {/* Mot aux invités */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
-          <Type className="w-4 h-4 text-stone-400" />
+          <PenLine className="w-4 h-4 text-stone-400" />
           <h3 className="text-[13px] font-semibold text-black">Mot aux invités</h3>
         </div>
         <p className={cn(tokens.text.body, 'mb-3 text-[11px]')}>Ce texte apparaît sous la bannière de la page d'accueil.</p>
@@ -163,7 +163,7 @@ export default function PersonnalisationSection({ settings, onSave, saving, prev
                   className="w-8 h-8 rounded-full shrink-0 border border-white/20 shadow-sm"
                   style={{ backgroundColor: swatch.color }}
                 />
-                <span className="text-[13px] font-medium text-black">{swatch.label}</span>
+                <span className="text-[13px] font-medium text-black text-left flex-1">{swatch.label}</span>
                 {isSelected && <Check size={14} className="ml-auto text-black" />}
               </button>
             )

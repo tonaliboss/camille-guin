@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from '@/components/shadcn/sonner'
-import { Lora, Playfair_Display, Cormorant_Garamond, Great_Vibes, Montserrat, EB_Garamond } from 'next/font/google'
+import { Inter, Lora, Playfair_Display, Cormorant_Garamond, Great_Vibes, Montserrat, EB_Garamond } from 'next/font/google'
 
-const lora = Lora({ subsets: ['latin'], variable: '--font-lora' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const lora = Lora({ 
+  subsets: ['latin'], 
+  variable: '--font-lora',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+})
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
 const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'], variable: '--font-cormorant' })
 const greatVibes = Great_Vibes({ subsets: ['latin'], weight: '400', variable: '--font-great-vibes' })
@@ -12,7 +18,7 @@ const ebGaramond = EB_Garamond({ subsets: ['latin'], variable: '--font-eb-garamo
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${lora.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} ${ebGaramond.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${lora.variable} ${playfair.variable} ${cormorant.variable} ${greatVibes.variable} ${montserrat.variable} ${ebGaramond.variable}`}>
       <body>
         {children}
         <Toaster duration={5000} position="top-center" />

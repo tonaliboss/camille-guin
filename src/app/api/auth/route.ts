@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 const COOKIE_NAME = 'admin_session'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 1 semaine
 

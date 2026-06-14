@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight, Download, EyeOff, Eye, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import jsPDF from 'jspdf'
 import type { Message, Page, UserRole, DepotSettings } from '@/types'
 import { getMessages, toggleMediaVisibility } from '@/lib/media'
@@ -48,11 +49,13 @@ export default function LivreOrSection({ role, settings }: Props) {
 
   const hideMessage = async (item: Message & { _id: string }) => {
     await toggleMediaVisibility(item._id, true)
+    toast.success('Message masqué avec succès')
     await loadMessages()
   }
 
   const unhideMessage = async (item: Message & { _id: string }) => {
     await toggleMediaVisibility(item._id, false)
+    toast.success('Message démasqué avec succès')
     loadMessages()
   }
 

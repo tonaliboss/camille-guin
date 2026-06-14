@@ -202,7 +202,7 @@ export default function Depot({ token }: Props) {
 
       </main>
 
-      <CamoriaFooter settings={settings} />
+      <CamoriaFooter settings={settings} useThemedFont />
     </div>
   )
 }

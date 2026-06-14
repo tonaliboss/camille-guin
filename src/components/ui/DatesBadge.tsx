@@ -10,7 +10,7 @@ export default function DatesBadge() {
         </div>
         <div className="flex flex-col">
           <p className="text-[9px] font-bold tracking-widest uppercase text-stone-400 mb-0.5">Événement</p>
-          <p className="text-[16px] italic font-bold text-stone-500 leading-none">
+          <p className="text-[16px] font-bold leading-none font-lora-italic">
             {formatDate(WEDDING_DATE)}
           </p>
         </div>

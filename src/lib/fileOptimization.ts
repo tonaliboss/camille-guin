@@ -193,15 +193,23 @@ export const isHeic = (file: File): boolean => {
 }
 
 export const convertHeicToJpeg = async (file: File): Promise<File> => {
-  const formData = new FormData()
-  formData.append('file', file)
-
-  const res = await fetch('/api/convert-heic', { method: 'POST', body: formData })
-  if (!res.ok) throw new Error('Conversion HEIC échouée')
-
-  const blob = await res.blob()
-  return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
-    type: 'image/jpeg',
-    lastModified: Date.now(),
-  })
+  try {
+    const heic2any = (await import('heic2any')).default
+    const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 })
+    const blob = Array.isArray(result) ? result[0] : result
+    return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+      type: 'image/jpeg',
+      lastModified: Date.now(),
+    })
+  } catch {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetch('/api/convert-heic', { method: 'POST', body: formData })
+    if (!res.ok) throw new Error('Conversion HEIC échouée')
+    const blob = await res.blob()
+    return new File([blob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+      type: 'image/jpeg',
+      lastModified: Date.now(),
+    })
+  }
 }

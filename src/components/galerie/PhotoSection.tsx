@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Download, X, EyeOff, Eye, ChevronLeft, ChevronRight } from 'lucide-react'
+import { toast } from 'sonner'
 import type { MediaItem, UserRole, DepotSettings } from '@/types'
 import { getGalerieMedia, toggleMediaVisibility } from '@/lib/media'
 import { downloadAllAsZip, downloadFile } from '@/lib/download'
@@ -43,11 +44,13 @@ export default function PhotoSection({ role, settings }: Props) {
 
   const hideMedia = async (item: MediaItem) => {
     await toggleMediaVisibility(item.id, true)
+    toast.success('Contenu masqué avec succès')
     loadMedia()
   }
 
   const unhideMedia = async (item: MediaItem) => {
     await toggleMediaVisibility(item.id, false)
+    toast.success('Contenu démasqué avec succès')
     loadMedia()
   }
 
@@ -67,6 +70,36 @@ export default function PhotoSection({ role, settings }: Props) {
     <section id="galerie" className="py-20 px-5">
       <p className={cn(tokens.text.body, 'text-center')}>Chargement...</p>
     </section>
+  )
+
+  const MediaCell = ({ item, index, list }: { item: MediaItem; index: number; list: 'public' | 'hidden' }) => (
+    <div
+      className="rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
+      onClick={() => { setLightboxList(list); setLightboxIndex(index) }}
+    >
+      {item.type === 'image' ? (
+        <div className="relative" style={{ aspectRatio: '4/3' }}>
+          <div className="absolute inset-0 bg-stone-200 animate-pulse" />
+          <img
+            src={item.url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-all duration-700"
+            loading="lazy"
+            style={{ opacity: 0, transition: 'opacity 0.3s ease' }}
+            onLoad={e => (e.currentTarget.style.opacity = '1')}
+          />
+        </div>
+      ) : (
+        <video
+          src={item.url}
+          className="w-full h-full object-cover"
+          controls
+          preload="metadata"
+          style={{ aspectRatio: '16/9' }}
+        />
+      )}
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all pointer-events-none" />
+    </div>
   )
 
   return (
@@ -108,20 +141,9 @@ export default function PhotoSection({ role, settings }: Props) {
         {media.length === 0 ? (
           <p className={cn(tokens.text.body, 'text-center')}>Aucune photo ou vidéo disponible</p>
         ) : (
-          <div className="columns-2 gap-3 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
             {media.slice(0, showAllMedia ? undefined : INITIAL_PHOTOS).map((item, index) => (
-              <div
-                key={item.id}
-                className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
-                onClick={() => { setLightboxList('public'); setLightboxIndex(index) }}
-              >
-                {item.type === 'image' ? (
-                  <img src={item.url} alt="" className="w-full hover:scale-105 transition-transform duration-700" loading="lazy" />
-                ) : (
-                  <video src={item.url} className="w-full" controls preload="metadata" />
-                )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all" />
-              </div>
+              <MediaCell key={item.id} item={item} index={index} list="public" />
             ))}
           </div>
         )}
@@ -168,31 +190,22 @@ export default function PhotoSection({ role, settings }: Props) {
               )}
             </div>
 
-            <div className="columns-2 gap-3 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
               {hiddenMedia.slice(0, showAllHidden ? undefined : INITIAL_PHOTOS).map((item, index) => (
-                <div
-                  key={item.id}
-                  className="break-inside-avoid rounded-[6px] overflow-hidden group relative cursor-pointer bg-stone-100"
-                  onClick={() => { setLightboxList('hidden'); setLightboxIndex(index) }}
-                >
-                  {item.type === 'image' ? (
-                    <img src={item.url} alt="" className="w-full" loading="lazy" />
-                  ) : (
-                    <video src={item.url} className="w-full" controls preload="metadata" />
-                  )}
-                </div>
+                <MediaCell key={item.id} item={item} index={index} list="hidden" />
               ))}
             </div>
+
+            {hiddenMedia.length > INITIAL_PHOTOS && (
+              <button
+                onClick={() => setShowAllHidden(!showAllHidden)}
+                className={cn(tokens.btn.outline, 'mt-4')}
+                style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
+              >
+                {showAllHidden ? 'Voir moins' : `Voir tout (+${hiddenMedia.length - INITIAL_PHOTOS})`}
+              </button>
+            )}
           </div>
-        )}
-        {hiddenMedia.length > INITIAL_PHOTOS && (
-          <button
-            onClick={() => setShowAllHidden(!showAllHidden)}
-            className={cn(tokens.btn.outline, 'mt-4')}
-            style={{ backgroundColor: settings.themeColor + '15', color: settings.themeColor, borderColor: settings.themeColor + '30' }}
-          >
-            {showAllHidden ? 'Voir moins' : `Voir tout (+${hiddenMedia.length - INITIAL_PHOTOS})`}
-          </button>
         )}
       </section>
 

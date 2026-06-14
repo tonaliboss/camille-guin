@@ -62,7 +62,10 @@ export default function DepotSection({ depotUrl, settings }: Props) {
     <div className={cn(tokens.card.base, tokens.card.padding)}>
       <div className={tokens.section.cardHeader}>
         <div className={cn(tokens.section.cardAccent, 'bg-[#6b7562]')} />
-        <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941]')}>Plateforme de dépôt</h2>
+        <h2 
+          className={cn(tokens.text.dashboardTitle, 'text-[#4E5941]')}
+          style={{ fontFamily: 'var(--font-lora)' }}
+        >Plateforme de dépôt</h2>
       </div>
       <p className={cn(tokens.text.body, 'mb-6')}>
         Partagez ce lien à vos invités pour qu'ils puissent déposer leurs photos et vidéos.

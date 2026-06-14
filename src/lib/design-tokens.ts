@@ -41,6 +41,7 @@ export const tokens = {
     eyebrow: 'font-medium text-[10px] tracking-[0.35em] uppercase text-white/90 font-[\'Inter\']',
     navLabel: 'text-[7px] font-bold tracking-widest uppercase text-center leading-tight font-[\'Inter\']',
     label: 'font-bold tracking-widest uppercase text-stone-400 font-[\'Inter\']',
+    dashboardTitle: "italic font-bold text-[22px] leading-tight",
   },
 
   // ── Conteneurs d'icônes ──────────────────────────────────────────────────

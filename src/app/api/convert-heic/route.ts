@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import convert from 'heic-convert'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData()

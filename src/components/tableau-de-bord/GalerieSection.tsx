@@ -29,7 +29,7 @@ export default function GalerieSection({ galerieUrl }: Props) {
     <div className={cn(tokens.card.base, tokens.card.padding)}>
       <div className={tokens.section.cardHeader}>
         <div className={cn(tokens.section.cardAccent, 'bg-[#6b7562]')} />
-        <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941]')}>Galerie digitale</h2>
+        <h2 className={cn(tokens.text.cardTitle, 'text-[#4E5941] font-lora-italic')}>Galerie digitale</h2>
       </div>
       <p className={cn(tokens.text.body, 'mb-6')}>
         Transmettez ce lien à vos invités pour qu'ils puissent visionner la galerie. Rendez-vous dans l’onglet “Prévisualisation” en bas de page pour découvrir la galerie telle que vos invités la verront.

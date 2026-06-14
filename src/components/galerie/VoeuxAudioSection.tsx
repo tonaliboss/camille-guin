@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Download, EyeOff, Eye, Play, Pause } from 'lucide-react'
+import { toast } from 'sonner'
 import { getAudioMessages, toggleMediaVisibility } from '@/lib/media'
 import { downloadAllAsZip, downloadFile } from '@/lib/download'
 import type { AudioMessage, UserRole, DepotSettings } from '@/types'
@@ -172,11 +173,13 @@ export default function VoeuxAudioSection({ role, settings }: Props) {
 
   const hideAudio = useCallback(async (item: AudioMessage) => {
     await toggleMediaVisibility(item.id, true)
+    toast.success('Audio masqué avec succès')
     loadAudio()
   }, [loadAudio])
 
   const unhideAudio = useCallback(async (item: AudioMessage) => {
     await toggleMediaVisibility(item.id, false)
+    toast.success('Audio démasqué avec succès')
     loadAudio()
   }, [loadAudio])
 

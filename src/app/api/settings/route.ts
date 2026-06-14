@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 import { cookies } from 'next/headers'
 import { getSettings, updateSettings } from '@/lib/settings'
 
+export const dynamic = 'force-dynamic'
+
 async function isAdmin() {
   const cookieStore = await cookies()
   return cookieStore.get('admin_session')?.value === 'true'

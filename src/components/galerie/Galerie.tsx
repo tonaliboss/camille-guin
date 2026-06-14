@@ -58,7 +58,7 @@ export default function Galerie({ role, token, settings }: Props) {
       <LivreOrSection role={role} settings={settings} />
       <VoeuxAudioSection role={role} settings={settings} />
 
-      <CamoriaFooter settings={settings} />
+      <CamoriaFooter settings={settings} useThemedFont />
     </div>
   )
 }
